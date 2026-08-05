@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Revit 2025 addin manifest for SDX Tools.
+
+  Deployment: copy this entire folder (SDX.addin + SDX.dll) to
+    %AppData%\Autodesk\Revit\Addins\2025\
+
+  Development: load bin\Debug\net8.0-windows\SDX.dll via the Addin
+    Manager — that file is never locked by the ribbon Revit instance.
+-->
+<RevitAddIns>
+
+  <!-- ── Application ─ builds the ribbon and starts the AutoSync timer ── -->
+  <AddIn Type="Application">
+    <Name>SDX Tools</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.Ribbon.SDXApp</FullClassName>
+    <ClientId>46da1c6a-26e8-4e60-b211-c895b4992d36</ClientId>
+    <VendorId>SDraak</VendorId>
+    <VendorDescription>SDX Tools</VendorDescription>
+  </AddIn>
+
+  <!--
+    Commands below are intentionally commented out to prevent Revit from showing a
+    separate security/load prompt for each tool on first install. With all commands
+    registered individually, Revit treats each <AddIn Type="Command"> as a distinct
+    add-in and prompts once per entry - resulting in 20+ prompts for a single suite.
+
+    The Application entry above is sufficient for the ribbon and all tool functionality.
+    The trade-off is that individual commands are not listed in the keyboard shortcut
+    editor (Revit only shows commands from registered <AddIn Type="Command"> entries).
+
+    To re-enable individual keyboard shortcut registration in future, uncomment this
+    entire block and re-deploy. Each command will then appear in the KBS editor under
+    its <Name> (e.g. "SDX: Hide CAD Layer"), at the cost of one prompt per command
+    on first install on a new machine.
+  -->
+  <!--
+  <AddIn Type="Command">
+    <Name>SDX: Preferences</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.Preferences.PreferencesCommand</FullClassName>
+    <ClientId>4356fdb7-129b-4867-bb3e-3b79faa65da0</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Preferences</Text>
+    <Description>Configure Fun Mode, AutoSync, and addin ribbon tab visibility in one place.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Manage Addins</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.AddinManager.AddinManagerCommand</FullClassName>
+    <ClientId>d3a7f821-9c14-4b3e-a501-6f2e8c9d0b47</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Manage Addins</Text>
+    <Description>Enable or disable Revit addins. Changes take effect after restarting Revit.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: AutoSync Settings</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.AutoSync.AutoSyncSettingsCommand</FullClassName>
+    <ClientId>af49c028-2446-4a00-a9c8-7b8b98378b9a</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>AutoSync Settings</Text>
+    <Description>Configure auto-save and sync-to-central intervals.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Hide CAD Layer</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.HideCadLayer.HideCadLayerCommand</FullClassName>
+    <ClientId>11af91fe-15ee-47ea-a587-57f430169387</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Hide CAD Layer</Text>
+    <Description>Click a line on an imported CAD drawing to hide that layer in the active view.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Unhide All</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.UnhideAll.UnhideAll</FullClassName>
+    <ClientId>20c0e756-0b86-4ca2-bd13-00d8679aa18b</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Unhide All</Text>
+    <Description>Unhide all hidden elements in the active view.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Tag CAD Layers</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.TagCadLayers.TagCADLayers</FullClassName>
+    <ClientId>2d0986cb-dc45-4a44-86a2-8946ddd1899f</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Tag CAD Layers</Text>
+    <Description>Place text note tags on imported CAD layers in the active view.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Perp Sections</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.PerpSections.PerpSections</FullClassName>
+    <ClientId>a59a4b89-f551-46c7-a4d6-c0c90e04d59a</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Perp Sections</Text>
+    <Description>Create perpendicular sections along selected elements.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Batch Link Files</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.BatchLink.BatchLinkCommand</FullClassName>
+    <ClientId>b7c3e912-4f85-4d1a-9c6e-2a8f0d5e7b34</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Batch Link Files</Text>
+    <Description>Link multiple DWG and RVT files from a selected folder in one step.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Move Geo</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.MoveGeo.MoveGeoCommand</FullClassName>
+    <ClientId>3f8a2c91-5e47-4b0d-a6c3-9d1f7e2b8054</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Move Geo</Text>
+    <Description>Move selected elements by X, Y, Z displacement in millimetres.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Select by Family</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.SelectByFamily.SelectByFamilyCommand</FullClassName>
+    <ClientId>7c4e1a83-2f96-4d5e-b8a0-1c6d3e9f4b72</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Select by Family</Text>
+    <Description>Select all elements sharing the same family as the picked element(s).</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Usage Counter</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.UsageCounter.UsageCounterCommand</FullClassName>
+    <ClientId>a1b5c9d2-8e34-4f7a-9c6b-2d0e5f8a3c67</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Usage Counter</Text>
+    <Description>View how many times each SDX tool has been used.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Detail Lines Length</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.TotalDetailLinesLength.TotalDetailLinesLength</FullClassName>
+    <ClientId>f8a2c145-9e3b-4d7f-a0c6-1e5d8b3f7a92</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Detail Lines Length</Text>
+    <Description>Measure total length of detail lines by style in the active view.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Toggle Section Box</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.ToggleBoxVisibility.ToggleSectionBoxCommand</FullClassName>
+    <ClientId>c7e2a914-3f85-4d1b-9a6e-0b8c5f2d7e43</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Toggle Section Box</Text>
+    <Description>Toggle section box visibility in the active 3D view.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Toggle Scope Boxes</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.ToggleBoxVisibility.ToggleScopeBoxCommand</FullClassName>
+    <ClientId>d4f3b025-4a96-5e2c-ab7f-1c9d603e8f54</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Toggle Scope Boxes</Text>
+    <Description>Toggle scope box visibility in the active view.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Flip Each Element</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.FlipEachElementMidpoint.FlipEachElementMidpoint</FullClassName>
+    <ClientId>4be768c6-4fdc-45ae-a0bf-04525fba96e3</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Flip Each Element</Text>
+    <Description>Flip each selected element about its hand axis (FamilyInstance and Wall).</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Join All</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.UnjoinAll.JoinAll</FullClassName>
+    <ClientId>e2f4a7b3-1c8d-4e9f-a0b5-6d3c7e1f2a84</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Join All</Text>
+    <Description>Join all selected elements to each other where geometry intersects.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Free Dim (Aligned)</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.FreeDims.FreeDimsAlignedCommand</FullClassName>
+    <ClientId>a3f1c820-7e94-4b5d-9c2a-1d8f6e3b0a75</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Free Dim (Aligned)</Text>
+    <Description>Place a free aligned dimension between any two points — no geometry required.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Free Dim (Horizontal)</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.FreeDims.FreeDimsHorizontalCommand</FullClassName>
+    <ClientId>b7d2e931-8f05-4c6e-ad3b-2e9a7f4c1b86</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Free Dim (Horizontal)</Text>
+    <Description>Freely measure horizontal distance between any two points — no geometry required.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Free Dim (Vertical)</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.FreeDims.FreeDimsVerticalCommand</FullClassName>
+    <ClientId>c8e3f042-9b16-4d7f-be4c-3f0c8a5d2c97</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Free Dim (Vertical)</Text>
+    <Description>Freely measure vertical distance between any two points — no geometry required.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Align Viewport Crops</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.AlignViewportCrops.AlignViewportCropsCommand</FullClassName>
+    <ClientId>b269ba45-de79-4072-b24e-736c5fac6803</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Align Viewport Crops</Text>
+    <Description>Align the crop regions of two or more viewports on a sheet to match a reference viewport, without moving the viewports.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Align Viewports</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.AlignViewports.AlignViewportsCommand</FullClassName>
+    <ClientId>dd855df2-ed42-40bb-a210-f09f53c81d89</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Align Viewports</Text>
+    <Description>Match viewport positions on a target sheet to the equivalent views on a source sheet.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Find and Replace</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.FindReplace.FindReplaceCommand</FullClassName>
+    <ClientId>77de2f26-c766-485e-9b83-573c488574fd</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Find and Replace</Text>
+    <Description>Find and replace text across text notes and tags with a live preview grid.</Description>
+  </AddIn>
+  <AddIn Type="Command">
+    <Name>SDX: Fix Line Patterns</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.FixLinePatterns.FixLinePatternsCommand</FullClassName>
+    <ClientId>04f9a466-13eb-48a0-8fc6-82ff03597e89</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Fix Line Patterns</Text>
+    <Description>Fix segment lengths on imported CAD line patterns using lengths encoded in the pattern name.</Description>
+  </AddIn>
+  <AddIn Type="Command">
+    <Name>SDX: Send Feedback</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.Feedback.FeedbackCommand</FullClassName>
+    <ClientId>515c54fc-f09e-4500-8c91-ae6818643f22</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Send Feedback</Text>
+    <Description>Open a short feedback form pre-filled with your SDX and Revit version.</Description>
+  </AddIn>
+  -->
+
+</RevitAddIns>
