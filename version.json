@@ -3,5 +3,5 @@
   "filesBaseUrl": "https://stibbz.github.io/SDX-Tools",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/updater.ps1",
   "downloadPageUrl": "https://stibbz.github.io/SDX-Tools/",
-  "notes": "Bugfixes to the auto-updating process"
+  "notes": ""
 }
