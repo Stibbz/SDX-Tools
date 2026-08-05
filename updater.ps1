@@ -16,12 +16,15 @@
                            Example: https://stibbz.github.io/SDX-Tools-Updater
         -RevitAddinsFolder The path to the Revit Addins folder on this machine.
                            Example: C:\Users\YourName\AppData\Roaming\Autodesk\Revit\Addins
+        -NewVersion        The version string being installed (e.g. "v0.2.2"). Written to the
+                           result file so SDX Tools can show a confirmation dialog on next start.
 #>
 
 param(
     [Parameter(Mandatory = $true)] [int]    $RevitPid,
     [Parameter(Mandatory = $true)] [string] $FilesBaseUrl,
-    [Parameter(Mandatory = $true)] [string] $RevitAddinsFolder
+    [Parameter(Mandatory = $true)] [string] $RevitAddinsFolder,
+    [Parameter(Mandatory = $true)] [string] $NewVersion
 )
 
 $ErrorActionPreference = "Stop"
@@ -34,7 +37,8 @@ $FilesToUpdate = @("SDX.dll", "SDX.addin")
 $SupportedRevitVersions = @("2025", "2026")
 
 # Log file so you can inspect exactly what the updater did.
-$LogFile = Join-Path $env:APPDATA "SDX\updater.log"
+$LogFile      = Join-Path $env:APPDATA "SDX\updater.log"
+$ResultFile   = Join-Path $env:APPDATA "SDX\update-result.xml"
 
 function Write-Log {
     param([string] $Message)
@@ -46,6 +50,16 @@ function Write-Log {
         Add-Content -Path $LogFile -Value $logLine
     } catch { }
     Write-Host $logLine
+}
+
+function Write-Result {
+    param([bool] $Success)
+    try {
+        $xml = "<Result><Version>$NewVersion</Version><Success>$($Success.ToString().ToLower())</Success></Result>"
+        $resultFolder = Split-Path $ResultFile -Parent
+        if (-not (Test-Path $resultFolder)) { New-Item -ItemType Directory -Path $resultFolder -Force | Out-Null }
+        Set-Content -Path $ResultFile -Value $xml -Encoding UTF8
+    } catch { }
 }
 
 # Polls until Revit's process disappears from the process list.
@@ -165,13 +179,16 @@ try {
 
     if ($anythingUpdated) {
         Write-Log "Update complete. You can now reopen Revit."
+        Write-Result -Success $true
     } else {
         Write-Log "No version folders matched. Nothing was updated."
+        Write-Result -Success $false
     }
 
     exit 0
 }
 catch {
     Write-Log "ERROR: $($_.Exception.Message)"
+    Write-Result -Success $false
     exit 1
 }
