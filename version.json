@@ -3,5 +3,5 @@
   "filesBaseUrl": "https://stibbz.github.io/SDX-Tools",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/updater.ps1",
   "downloadPageUrl": "https://stibbz.github.io/SDX-Tools/",
-  "notes": "First push using auto-updating. The ribbon will be able to update automatically from now on."
+  "notes": "First release using auto-updating. From now on the ribbon will be able to get automatically updated."
 }
