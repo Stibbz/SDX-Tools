@@ -3,5 +3,5 @@
   "filesBaseUrl": "https://stibbz.github.io/SDX-Tools",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/updater.ps1",
   "downloadPageUrl": "https://stibbz.github.io/SDX-Tools/",
-  "notes": ""
+  "notes": "- Dark title bars on all dialogs\r\n- Ribbon icons adapt to Revit's light/dark theme\r\n- Preferences redesigned with pill-style toggles\r\n- Updates can be scheduled from Preferences\r\n- Confirmation shown after a successful update installs"
 }
