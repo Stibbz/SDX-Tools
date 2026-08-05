@@ -1,7 +1,7 @@
 {
-  "version": "0.2.0",
+  "version": "0.2.1",
   "filesBaseUrl": "https://stibbz.github.io/SDX-Tools",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/updater.ps1",
   "downloadPageUrl": "https://stibbz.github.io/SDX-Tools/",
-  "notes": "First release using auto-updating. From now on the ribbon will be able to get automatically updated."
+  "notes": ""
 }
