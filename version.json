@@ -1,7 +1,7 @@
 {
-  "version": "0.2.3",
+  "version": "0.2.4",
   "filesBaseUrl": "https://stibbz.github.io/SDX-Tools",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/updater.ps1",
   "downloadPageUrl": "https://stibbz.github.io/SDX-Tools/",
-  "notes": "- Dark title bars on all dialogs\r\n- Ribbon icons adapt to Revit's light/dark theme\r\n- Preferences redesigned with pill-style toggles\r\n- Updates can be scheduled from Preferences\r\n- Confirmation shown after a successful update installs"
+  "notes": "- Preferences dialog redesigned: separate tabs for settings and tool tiles, with a status strip and improved update pill\r\n- Tool tiles now support tooltips with a body description\r\n- AutoSync settings use a toggle pill instead of a checkbox\r\n- PillToggle style is now shared across dialogs\r\n- Tool tiles can be individually shown/hidden from the ToolCatalog\r\n- Updater is more reliable: mutex guard prevents duplicate runs, version check before applying, and shows a result message\r\n- Centralised silly text catalog (SdxSillyTexts) replaces scattered inline arrays"
 }
