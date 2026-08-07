@@ -3,18 +3,18 @@
 
     This script is launched automatically by SDX Tools inside Revit when you agree to install
     an update. It waits for Revit to close, verifies the update is still needed, then downloads
-    the new SDX.dll and SDX.addin files directly from the public SDX-Tools-Updater repository
-    on GitHub and copies them into your Revit Addins folder.
+    the new SDX.dll and SDX.addin files directly from the public SDX-Tools release
+    assets on GitHub and copies them into your Revit Addins folder.
 
     You can see every file this script will download by visiting:
-    https://github.com/Stibbz/SDX-Tools-Updater
+    https://github.com/Stibbz/SDX-Tools/releases/latest
 
     Parameters passed in by the add-in at runtime:
         -RevitPid          The process ID of the running Revit that scheduled the update.
                            The script waits for it to close before checking versions or
                            touching any files.
         -FilesBaseUrl      The base URL where the update files are hosted.
-                           Example: https://stibbz.github.io/SDX-Tools-Updater
+                           Example: https://github.com/Stibbz/SDX-Tools/releases/download/v0.2.4
         -RevitAddinsFolder The path to the Revit Addins folder on this machine.
                            Example: C:\Users\YourName\AppData\Roaming\Autodesk\Revit\Addins
         -NewVersion        The version string being installed (e.g. "v0.2.2"). Used to verify
@@ -252,7 +252,12 @@ try {
             Write-Log "Updating Revit $revitVersion..."
 
             foreach ($fileName in $FilesToUpdate) {
-                $downloadUrl         = "$baseUrl/$revitVersion/$fileName"
+                # Remote assets are flat-named per release (SDX-2025.dll etc.)
+                # because GitHub release asset names cannot contain slashes.
+                # Local install path keeps the plain file name in the version folder.
+                $extension           = [System.IO.Path]::GetExtension($fileName)
+                $remoteFileName      = "SDX-$revitVersion$extension"
+                $downloadUrl         = "$baseUrl/$remoteFileName"
                 $destinationFilePath = Join-Path $destinationFolder $fileName
 
                 Write-Log "  Downloading: $downloadUrl"

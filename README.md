@@ -22,10 +22,10 @@ SDX Tools adds a dedicated **SDX** ribbon tab to Revit with tools that close gap
 
 | Tool | Description |
 |---|---|
-| **Preferences** | Configure AutoSync intervals, show or hide individual tools from the ribbon, manage addin tab visibility, and view usage statistics — all in one place. |
+| **Preferences** | Configure AutoSync intervals, show or hide individual tools from the ribbon, manage addin tab visibility, and view usage statistics — all in one place. Visibility choices are remembered across updates. |
 | **Send Feedback** | Report issues or suggestions directly from inside Revit. |
 | **Batch Link Files** | Link every DWG and RVT in a folder in one step, with control over workset assignment and positioning. |
-| **Fix Line Patterns** | Corrects imported CAD line pattern segment lengths by reading dash and gap sizes encoded in the pattern name. |
+| **Fix Line Patterns** | Corrects imported CAD line pattern segment lengths by reading dash and gap sizes encoded in the pattern name. Lists every pattern and the lengths it will write for confirmation first. |
 
 ### Selection
 
@@ -59,7 +59,7 @@ SDX Tools adds a dedicated **SDX** ribbon tab to Revit with tools that close gap
 | Tool | Description |
 |---|---|
 | **Level Extents** | Snaps level datum extents to match the crop region of the active section or elevation view, keeping levels tidy without manual dragging. |
-| **Match Viewports** | Align the crop regions of multiple viewports on a sheet to a reference viewport without repositioning them. |
+| **Match Viewports** | Align the crop regions of multiple viewports on a sheet to a reference viewport without repositioning them. Optionally aligns to a reference element picked in the model or in a link. |
 | **Match Sheet Positions** | Copy viewport positions and view assignments from a source sheet to a target sheet. |
 
 ---
@@ -117,7 +117,7 @@ The public distribution repo (`Stibbz/SDX-Tools`) is updated automatically by `.
 2. Publish a GitHub Release on this repo. The workflow fires and:
    - Builds both Revit 2025 and 2026 targets
    - Copies the built `2025/` and `2026/` folders to the public repo
-   - Generates and pushes `version.json` and `updater.ps1`
+   - Generates and pushes `version.json` (including the `updater.ps1` SHA-256) and `updater.ps1`
    - Attaches a `.zip` to the GitHub Release for manual downloads
 
 **Versioning (`MAJOR.MINOR.PATCH`):**
@@ -138,22 +138,25 @@ Rules: always bump before releasing; never go backwards; use three parts only (`
 
 ## Updater internals
 
-`SDX/Update/UpdateService.cs` checks `version.json` on the public Pages site at startup (rate-limited to once per 6 hours). If a newer version is found, it prompts the user and sets a deferred flag. On Revit shutdown, it downloads `updater.ps1` to `%TEMP%\SdxUpdate\` and launches it with:
+`SDX/Update/UpdateService.cs` reads `version.json` from the public repo at startup (rate-limited to once per 6 hours). If a newer version is found, it prompts the user and sets a deferred flag. On Revit shutdown, it downloads `updater.ps1` to `%TEMP%\SdxUpdate\`, **verifies it against the `updaterSha256` in the manifest**, and only then launches it with:
 
 ```
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File updater.ps1 `
     -RevitPid <pid> -FilesBaseUrl <url> -RevitAddinsFolder <%AppData%\Autodesk\Revit\Addins>
 ```
 
-`updater.ps1` waits for Revit to exit, waits for `SDX.dll` to unlock, then downloads `SDX.dll` and `SDX.addin` from `$FilesBaseUrl/{version}/` into each installed version folder. Log: `%AppData%\SDX\updater.log`.
+`updater.ps1` waits for Revit to exit, re-checks the installed version, waits for `SDX.dll` to unlock, then downloads the flat per-Revit-version release assets (`SDX-2025.dll`, `SDX-2025.addin`, ...) from `$FilesBaseUrl` into each installed version folder. Log: `%AppData%\SDX\updater.log`.
+
+The script runs with `-ExecutionPolicy Bypass`, so it is hashed before it runs. A mismatch **or a manifest with no `updaterSha256`** aborts the update and logs an error — refusing to update is always safer than running an unverified script. The release workflow hashes the exact `updater.ps1` it publishes, so this needs no manual step.
 
 **`version.json` fields** (deserialized by `UpdateManifest.cs`):
 
 | Key | Meaning |
 |-----|---------|
 | `version` | Latest published version |
-| `filesBaseUrl` | Base URL — append `/{version}/SDX.dll` etc. |
+| `filesBaseUrl` | Release download base — `updater.ps1` appends `/SDX-{revitVersion}.dll` etc. |
 | `updaterUrl` | Direct URL to `updater.ps1` |
+| `updaterSha256` | SHA-256 of `updater.ps1`, verified before it is executed. Required |
 | `downloadPageUrl` | Fallback landing page if updater launch fails |
 | `notes` | Release notes shown in the Revit toast |
 
