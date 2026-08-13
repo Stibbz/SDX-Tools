@@ -35,7 +35,7 @@ $FilesToUpdate = @("SDX.dll", "SDX.addin")
 
 # The Revit versions SDX Tools supports. Only versions actually installed on this
 # machine (i.e. the folder exists) will be updated.
-$SupportedRevitVersions = @("2025", "2026")
+$SupportedRevitVersions = @("2024", "2025", "2026", "2027")
 
 # Log file so you can inspect exactly what the updater did.
 $LogFile = Join-Path $env:APPDATA "SDX\updater.log"
