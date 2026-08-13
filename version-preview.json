@@ -2,7 +2,7 @@
   "version": "0.3.2-preview",
   "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.3.2-preview",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/updater.ps1",
-  "updaterSha256": "936cd9970ce20563c7fd7bf61ef0977ee3cf4f25fc08689a42ffd40bf14ef083",
+  "updaterSha256": "e9ce2257543426226e93e294dceab8b7d8336c0772ffba12765e950da811a168",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
   "notes": "- **What's Changed**: release notes are now formatted with bullet points; an Expand button loads the full version history\r\n- **Preferences**: Silly Texts toggle and update channel picker moved into the Advanced section\r\n- WIP tools show a yellow WIP badge in their dialog window, matching the badge on the Preferences tile"
 }
