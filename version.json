@@ -2,7 +2,7 @@
   "version": "0.3.1",
   "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.3.1",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/updater.ps1",
-  "updaterSha256": "936cd9970ce20563c7fd7bf61ef0977ee3cf4f25fc08689a42ffd40bf14ef083",
+  "updaterSha256": "e9ce2257543426226e93e294dceab8b7d8336c0772ffba12765e950da811a168",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
   "notes": "- SDX Tools now supports Revit 2024 alongside the existing 2025 and 2026 targets\r\n- SDX Tools now supports Revit 2027\r\n- New tool: Slope Lines -- annotate sections and elevations with hachure lines that follow the ground slope\r\n- Hide CAD Layer can now pick DWG text and point objects in addition to lines; pick radius is wider\r\n- Window title bars follow Revit's light/dark theme switch immediately\r\n- Match Viewports Vertically (formerly Match Viewports) -- host-model elements are now the primary anchor pick; the tool works without a linked file; Escape falls back to a linked-model pick\r\n- Match Viewports Vertically shows a toast throughout every pick step\r\n- The updater now supports Stable and Preview channels, switchable from Preferences"
 }
