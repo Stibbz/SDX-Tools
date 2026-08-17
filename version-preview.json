@@ -1,8 +1,8 @@
 {
-  "version": "0.4.0-preview",
-  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.0-preview",
+  "version": "0.4.2-preview",
+  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.2-preview",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/updater.ps1",
   "updaterSha256": "e9ce2257543426226e93e294dceab8b7d8336c0772ffba12765e950da811a168",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
-  "notes": "SDX Tools now reports anonymous usage counts, so the tools people actually use get the attention and broken ones surface without anyone filing a report. One small batch is sent per day when Revit starts: which tools ran, whether each run succeeded, failed or was cancelled, and the SDX and Revit versions\r\nNo user names, machine names, file paths or model contents ever leave your machine\r\nUsage reporting can be turned off any time under Preferences > Advanced, where a button also shows the exact payload that would be sent\r\nAdministrators can switch usage reporting off for a whole computer, overriding the per-user setting\r\nSlope Lines is now counted in the Usage Counter; it had been missing since the tool was added"
+  "notes": "- Find & Replace remembers last-used options (scope, checkboxes, toggles) across sessions\r\n- Find & Replace simplified — configuration presets dropped, dialog is leaner\r\n- Fix Line Patterns and other long summaries scroll instead of overflowing\r\n- Preferences update channel picker is now a pill toggle; switching to Stable from a Preview build correctly offers the latest stable release\r\n- Usage Stats toggle moved inside the \"what is sent\" window\r\n- Fix Line Patterns shows already-correct patterns alongside ones it will update; reports if nothing needs fixing\r\n- All resizable SDX dialogs remember their size between sessions\r\n- Scrollbars across all SDX dialogs styled dark and slim\r\n- Ribbon panels that contain only hidden tools are now hidden automatically"
 }
