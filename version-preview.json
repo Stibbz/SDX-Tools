@@ -1,8 +1,8 @@
 {
-  "version": "0.4.2-preview",
-  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.2-preview",
+  "version": "0.4.0",
+  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.0",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/updater.ps1",
   "updaterSha256": "e9ce2257543426226e93e294dceab8b7d8336c0772ffba12765e950da811a168",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
-  "notes": "- Find & Replace remembers last-used options (scope, checkboxes, toggles) across sessions\r\n- Find & Replace simplified — configuration presets dropped, dialog is leaner\r\n- Fix Line Patterns and other long summaries scroll instead of overflowing\r\n- Preferences update channel picker is now a pill toggle; switching to Stable from a Preview build correctly offers the latest stable release\r\n- Usage Stats toggle moved inside the \"what is sent\" window\r\n- Fix Line Patterns shows already-correct patterns alongside ones it will update; reports if nothing needs fixing\r\n- All resizable SDX dialogs remember their size between sessions\r\n- Scrollbars across all SDX dialogs styled dark and slim\r\n- Ribbon panels that contain only hidden tools are now hidden automatically"
+  "notes": "- New WIP tool View Template Diff (hidden by default, enable in Preferences)\r\n- Anonymous usage counts (opt-out under Preferences > Advanced, with payload viewer); records how each run ended; Slope Lines now counted\r\n- Find & Replace remembers last-used options; saved-config dropdown removed\r\n- Fix Line Patterns shows already-correct patterns; long summaries scroll\r\n- What's Changed window formats notes as bullets + Expand fetches full changelog\r\n- Channel picker is now a single pill; switching to Stable offers the latest stable so you can downgrade\r\n- Usage Stats opens the \"what is sent\" window with the toggle inside\r\n- WIP badge shown in tools' own windows; all dialogs remember size; dark-themed scrollbars; empty ribbon panels auto-hidden"
 }
