@@ -18,6 +18,23 @@
 
 SDX Tools adds a dedicated **SDX** ribbon tab to Revit with tools that close gaps Autodesk left behind. Built by someone who uses Revit daily on large-scale civil engineering projects.
 
+## Installation
+
+Close Revit first. Then copy `SDX.addin` and `SDX.dll` for your Revit version into your per-user Revit Addins folder:
+
+```
+%APPDATA%\Autodesk\Revit\Addins\<version>\
+```
+
+For example, for Revit 2026:
+
+```
+%APPDATA%\Autodesk\Revit\Addins\2026\SDX.addin
+%APPDATA%\Autodesk\Revit\Addins\2026\SDX.dll
+```
+
+Both files must sit directly in the version folder (not a subfolder). Start Revit — the **SDX** tab appears on the ribbon. To update, close Revit and overwrite both files; to uninstall, delete them.
+
 ## Tools
 
 Panels containing only hidden tools auto-hide from the ribbon. Each tool can be shown or hidden individually via Preferences — choices are remembered across updates.
