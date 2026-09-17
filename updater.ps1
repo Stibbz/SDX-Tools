@@ -85,6 +85,244 @@ function Wait-ForRevitToClose {
     return $false
 }
 
+function Try-ForceCloseRevit {
+    param([int] $ProcessId)
+
+    try {
+        $revitProcess = Get-Process -Id $ProcessId -ErrorAction SilentlyContinue
+        if ($null -eq $revitProcess) { return $true }
+
+        Write-Log "Force-close requested for Revit (PID $ProcessId)."
+
+        try {
+            $null = $revitProcess.CloseMainWindow()
+        } catch { }
+
+        if (-not $revitProcess.WaitForExit(5000)) {
+            try {
+                $revitProcess.Kill()
+            } catch { }
+            $revitProcess.WaitForExit(10000) | Out-Null
+        }
+
+        return $revitProcess.HasExited
+    }
+    catch {
+        Write-Log "WARNING: force-close failed: $($_.Exception.Message)"
+        return $false
+    }
+}
+
+function New-FallbackSdxWindowIcon {
+    try {
+        $bitmap = New-Object System.Drawing.Bitmap 32, 32
+        $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+        $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+
+        $backgroundBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(34, 41, 51))
+        $accentBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(0, 122, 204))
+        $textBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::White)
+        $font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
+
+        $graphics.FillRectangle($backgroundBrush, 0, 0, 32, 32)
+        $graphics.FillRectangle($accentBrush, 2, 2, 28, 28)
+        $graphics.DrawString("S", $font, $textBrush, 7, 5)
+
+        $iconHandle = $bitmap.GetHicon()
+        $icon = [System.Drawing.Icon]::FromHandle($iconHandle)
+        $clone = $icon.Clone()
+
+        $font.Dispose()
+        $textBrush.Dispose()
+        $accentBrush.Dispose()
+        $backgroundBrush.Dispose()
+        $graphics.Dispose()
+        $bitmap.Dispose()
+        $icon.Dispose()
+
+        return $clone
+    }
+    catch {
+        return $null
+    }
+}
+
+function New-IconFromBitmap {
+    param([System.Drawing.Bitmap] $Bitmap)
+
+    try {
+        $iconHandle = $Bitmap.GetHicon()
+        $icon = [System.Drawing.Icon]::FromHandle($iconHandle)
+        $clone = $icon.Clone()
+        $icon.Dispose()
+        return $clone
+    }
+    catch {
+        return $null
+    }
+}
+
+function Get-SdxWindowIcon {
+    try {
+        $iconPath = Join-Path $PSScriptRoot "sdx-updater.ico"
+        if (Test-Path $iconPath) {
+            return New-Object System.Drawing.Icon($iconPath)
+        }
+
+        $pngPath = Join-Path $PSScriptRoot "sdx-updater.png"
+        if (Test-Path $pngPath) {
+            $bitmap = New-Object System.Drawing.Bitmap($pngPath)
+            try {
+                $iconFromPng = New-IconFromBitmap -Bitmap $bitmap
+                if ($null -ne $iconFromPng) {
+                    Write-Log "Using updater icon from $pngPath"
+                    return $iconFromPng
+                }
+            }
+            finally {
+                $bitmap.Dispose()
+            }
+        }
+    }
+    catch {
+        Write-Log "WARNING: custom updater icon could not be loaded: $($_.Exception.Message)"
+    }
+
+    return New-FallbackSdxWindowIcon
+}
+
+# Shows a small status window while waiting for the scheduling Revit process to
+# fully exit. Closing the window cancels the update. The user can also request a
+# force-close of Revit from this window.
+function Wait-ForRevitToCloseInteractive {
+    param([int] $ProcessId, [int] $TimeoutSeconds = 120)
+
+    $alreadyClosed = Get-Process -Id $ProcessId -ErrorAction SilentlyContinue
+    if ($null -eq $alreadyClosed) {
+        return [pscustomobject]@{ Closed = $true; Cancelled = $false; TimedOut = $false }
+    }
+
+    try {
+        Add-Type -AssemblyName System.Windows.Forms
+        Add-Type -AssemblyName System.Drawing
+
+        $form = New-Object System.Windows.Forms.Form
+        $form.Text = "SDX Updater"
+        $form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
+        $form.Width = 520
+        $form.Height = 210
+        $form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedDialog
+        $form.MaximizeBox = $false
+        $form.MinimizeBox = $false
+        $form.TopMost = $true
+
+        $windowIcon = Get-SdxWindowIcon
+        if ($null -ne $windowIcon) {
+            $form.Icon = $windowIcon
+        }
+
+        $label = New-Object System.Windows.Forms.Label
+        $label.Left = 20
+        $label.Top = 20
+        $label.Width = 470
+        $label.Height = 75
+        $label.Text = "Waiting for Revit to close, please wait.`r`n`r`nClosing this window cancels the update."
+        $form.Controls.Add($label)
+
+        $cancelButton = New-Object System.Windows.Forms.Button
+        $cancelButton.Text = "Cancel Update"
+        $cancelButton.Left = 250
+        $cancelButton.Top = 110
+        $cancelButton.Width = 110
+        $cancelButton.Height = 30
+        $form.Controls.Add($cancelButton)
+
+        $forceButton = New-Object System.Windows.Forms.Button
+        $forceButton.Text = "Force Close Revit"
+        $forceButton.Left = 370
+        $forceButton.Top = 110
+        $forceButton.Width = 120
+        $forceButton.Height = 30
+        $form.Controls.Add($forceButton)
+
+        $state = [pscustomobject]@{
+            Closed = $false
+            Cancelled = $false
+            TimedOut = $false
+            CompletedByTimer = $false
+            StartedUtc = [DateTime]::UtcNow
+        }
+
+        $cancelButton.Add_Click({
+            $state.Cancelled = $true
+            $form.Close()
+        })
+
+        $forceButton.Add_Click({
+            $forceButton.Enabled = $false
+            $forceButton.Text = "Forcing..."
+
+            $forced = Try-ForceCloseRevit -ProcessId $ProcessId
+            if ($forced) {
+                Write-Log "Force-close succeeded for Revit (PID $ProcessId)."
+            } else {
+                Write-Log "Force-close did not finish Revit (PID $ProcessId)."
+                $forceButton.Enabled = $true
+                $forceButton.Text = "Force Close Revit"
+            }
+        })
+
+        $timer = New-Object System.Windows.Forms.Timer
+        $timer.Interval = 500
+        $timer.Add_Tick({
+            $running = Get-Process -Id $ProcessId -ErrorAction SilentlyContinue
+            if ($null -eq $running) {
+                $state.Closed = $true
+                $state.CompletedByTimer = $true
+                $timer.Stop()
+                $form.Close()
+                return
+            }
+
+            $elapsedSeconds = [int]([DateTime]::UtcNow - $state.StartedUtc).TotalSeconds
+            $label.Text = "Waiting for Revit to close, please wait.`r`nElapsed: $elapsedSeconds seconds.`r`n`r`nClosing this window cancels the update."
+
+            if ($elapsedSeconds -ge $TimeoutSeconds) {
+                $state.TimedOut = $true
+                $timer.Stop()
+                $form.Close()
+            }
+        })
+
+        $form.Add_FormClosing({
+            if (-not $state.CompletedByTimer -and -not $state.TimedOut) {
+                if (-not $state.Cancelled) {
+                    $state.Cancelled = $true
+                }
+            }
+        })
+
+        $timer.Start()
+        $null = $form.ShowDialog()
+        $timer.Dispose()
+        if ($null -ne $windowIcon) {
+            $windowIcon.Dispose()
+        }
+        $form.Dispose()
+
+        return [pscustomobject]@{
+            Closed = $state.Closed
+            Cancelled = $state.Cancelled
+            TimedOut = $state.TimedOut
+        }
+    }
+    catch {
+        Write-Log "WARNING: interactive wait window failed, falling back to background wait: $($_.Exception.Message)"
+        $closed = Wait-ForRevitToClose -ProcessId $ProcessId -TimeoutSeconds $TimeoutSeconds
+        return [pscustomobject]@{ Closed = $closed; Cancelled = $false; TimedOut = (-not $closed) }
+    }
+}
+
 # Polls until no Revit process remains on the machine, then returns.
 # Intended to run after the scheduling Revit has already closed; waits silently
 # for any other open Revit sessions to close before touching shared files.
@@ -165,10 +403,20 @@ try {
         Write-Log "Revit Addins path: $RevitAddinsFolder"
 
         # Step 1: Wait for the Revit that scheduled this update to close.
-        # This releases the DLL lock so we can read the installed version.
-        Write-Log "Waiting for Revit (PID $RevitPid) to close..."
-        $revitIsClosed = Wait-ForRevitToClose -ProcessId $RevitPid
-        if (-not $revitIsClosed) {
+        # This is interactive so the user sees why the updater is waiting.
+        Write-Log "Waiting for Revit (PID $RevitPid) to close (interactive wait window)..."
+        $waitResult = Wait-ForRevitToCloseInteractive -ProcessId $RevitPid
+
+        if ($waitResult.Cancelled) {
+            Write-Log "Update cancelled by user while waiting for Revit to close."
+            Show-MessageBox `
+                -Message "SDX Tools update was cancelled while waiting for Revit to fully close.`n`nYou can start the update again from Preferences." `
+                -Title   "SDX Tools Update Aborted" `
+                -Icon    "Warning"
+            exit 1
+        }
+
+        if ($waitResult.TimedOut) {
             Write-Log "ERROR: Revit (PID $RevitPid) did not close within 2 minutes. Aborting."
             Show-MessageBox `
                 -Message "SDX Tools update aborted: Revit did not close within 2 minutes.`n`nCheck $LogFile for details." `
@@ -176,6 +424,7 @@ try {
                 -Icon    "Warning"
             exit 1
         }
+
         Write-Log "Revit (PID $RevitPid) has closed."
 
         # Step 2: Version check -- bail out early if already on the target version.

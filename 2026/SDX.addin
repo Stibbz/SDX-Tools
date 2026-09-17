@@ -282,6 +282,24 @@
     <Text>Slope Lines</Text>
     <Description>Draw hachure slope lines between a top and bottom boundary polyline.</Description>
   </AddIn>
+  <AddIn Type="Command">
+    <Name>SDX: SP Sync</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.PhaseParameterSync.PhaseParameterSyncCommand</FullClassName>
+    <ClientId>39a7c5ee-21f6-4c7a-9b67-9f68f1a09f2f</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>SP Sync</Text>
+    <Description>Write locked phase code parameters from project phase source parameters.</Description>
+  </AddIn>
+  <AddIn Type="Command">
+    <Name>SDX: Phase Parameter Sync Settings</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.PhaseParameterSync.PhaseParameterSyncSettingsCommand</FullClassName>
+    <ClientId>f2ee913d-ec0b-4b3d-9a83-45551d67a7c1</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Phase Parameter Sync Settings</Text>
+    <Description>Configure realtime or manual phase parameter sync.</Description>
+  </AddIn>
   -->
 
 </RevitAddIns>
