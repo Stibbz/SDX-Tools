@@ -1,8 +1,10 @@
 {
-  "version": "0.4.1-preview.1",
-  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.1-preview.1",
+  "version": "0.4.3-preview.1",
+  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.3-preview.1",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/updater.ps1",
-  "updaterSha256": "5f8e70d4161763719544d18ab34aaba2597aedeebcef824ec1b635d41c14a1d2",
+  "updaterSha256": "97ecc2f10f652ad9c2adf69a616f09a49cbcf3549ef0e5fd5a86f800dc82eaa1",
+  "updaterExeUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.3-preview.1/SDX-Updater.exe",
+  "updaterExeSha256": "21b83900edf85a66d575c32d5f026cb572cb00d04975404c03b725ef4fab1f0e",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
   "notes": "- Update prompts at startup are now limited to once every 16 hours, so you typically see one prompt per workday.\r\n- Update prompt now includes Ignore this version, so you can stop reminders for a specific version and still update later from Preferences.\r\n- The startup What’s Changed window now shows reliably after updates, even when release notes are temporarily unavailable.\r\n- Preferences now shows the real SDX product version (including preview labels) instead of a misleading 1.0.0 assembly number.\r\n- When an update is waiting for Revit to fully close, the updater now shows a status window: Waiting for Revit to close, please wait.\r\n- Closing the updater wait window now cancels the pending update; it also includes a Force Close Revit option.\r\n- If multiple Revit sessions are open, updater launch is now deferred until the last Revit instance closes.\r\n- Updater wait window is now branded as SDX Updater and supports a custom SDX icon."
 }
