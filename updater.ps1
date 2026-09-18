@@ -27,7 +27,16 @@ param(
     [string] $RevitAddinsFolder,
     [string] $NewVersion,
     [switch] $TestWaitWindow,
-    [int]    $TestWaitSeconds = 20
+    [int]    $TestWaitSeconds = 20,
+    [switch] $Standalone,
+    [switch] $Install,
+    [switch] $Update,
+    [ValidateSet("Stable", "Preview")]
+    [string] $Channel = "Stable",
+    [string] $ManifestUrl,
+    [string] $StandaloneFilesBaseUrl,
+    [string] $StandaloneVersion,
+    [string[]] $StandaloneRevitVersions
 )
 
 $ErrorActionPreference = "Stop"
@@ -38,6 +47,9 @@ $FilesToUpdate = @("SDX.dll", "SDX.addin")
 # The Revit versions SDX Tools supports. Only versions actually installed on this
 # machine (i.e. the folder exists) will be updated.
 $SupportedRevitVersions = @("2024", "2025", "2026", "2027")
+
+$StableManifestUrl = "https://stibbz.github.io/SDX-Tools/version.json"
+$PreviewManifestUrl = "https://stibbz.github.io/SDX-Tools/version-preview.json"
 
 # Log file so you can inspect exactly what the updater did.
 $LogFile = Join-Path $env:APPDATA "SDX\updater.log"
@@ -69,6 +81,446 @@ function Assert-MainParameters {
 
     if ([string]::IsNullOrWhiteSpace($NewVersion)) {
         throw "Missing required parameter: -NewVersion"
+    }
+}
+
+function Test-HasAnyMainParameter {
+    if ($RevitPid -gt 0) {
+        return $true
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($FilesBaseUrl)) {
+        return $true
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($RevitAddinsFolder)) {
+        return $true
+    }
+
+    return -not [string]::IsNullOrWhiteSpace($NewVersion)
+}
+
+function Test-ShouldRunStandalone {
+    if ($Standalone -or $Install -or $Update) {
+        return $true
+    }
+
+    return -not (Test-HasAnyMainParameter)
+}
+
+function Get-ManifestUrlForChannel {
+    param([string] $ChannelName)
+
+    if ($ChannelName -ieq "Preview") {
+        return $PreviewManifestUrl
+    }
+
+    return $StableManifestUrl
+}
+
+function Test-CanUseInteractiveConsole {
+    try {
+        if ([Console]::IsInputRedirected) { return $false }
+        if ([Console]::IsOutputRedirected) { return $false }
+        $null = [Console]::CursorTop
+        return $true
+    }
+    catch {
+        return $false
+    }
+}
+
+function Wait-ForExitConfirmation {
+    if (-not (Test-CanUseInteractiveConsole)) {
+        return
+    }
+
+    Write-Host ""
+    Write-Host "Press Enter to exit." -ForegroundColor DarkGray
+    [void][Console]::ReadLine()
+}
+
+function Complete-Run {
+    param(
+        [bool] $Success,
+        [string] $Message,
+        [int] $ExitCode
+    )
+
+    $color = if ($Success) { "Green" } else { "Red" }
+    Write-Host ""
+    Write-Host $Message -ForegroundColor $color
+    Wait-ForExitConfirmation
+    exit $ExitCode
+}
+
+function Read-ArrowMenuChoice {
+    param(
+        [string] $Title,
+        [string[]] $Options,
+        [int] $DefaultIndex = 0
+    )
+
+    if ($null -eq $Options -or $Options.Count -eq 0) {
+        throw "Menu options cannot be empty."
+    }
+
+    if ($DefaultIndex -lt 0 -or $DefaultIndex -ge $Options.Count) {
+        $DefaultIndex = 0
+    }
+
+    $selectedIndex = $DefaultIndex
+    while ($true) {
+        Clear-Host
+        Write-Host "SDX Updater" -ForegroundColor Cyan
+        Write-Host $Title -ForegroundColor White
+        Write-Host "Use Up/Down arrows and press Enter." -ForegroundColor DarkGray
+        Write-Host ""
+
+        for ($index = 0; $index -lt $Options.Count; $index++) {
+            $option = $Options[$index]
+            if ($index -eq $selectedIndex) {
+                Write-Host ("> " + $option) -ForegroundColor Yellow
+            } else {
+                Write-Host ("  " + $option) -ForegroundColor Gray
+            }
+        }
+
+        $key = [Console]::ReadKey($true).Key
+        if ($key -eq [ConsoleKey]::UpArrow) {
+            if ($selectedIndex -gt 0) {
+                $selectedIndex--
+            }
+            continue
+        }
+
+        if ($key -eq [ConsoleKey]::DownArrow) {
+            if ($selectedIndex -lt ($Options.Count - 1)) {
+                $selectedIndex++
+            }
+            continue
+        }
+
+        if ($key -eq [ConsoleKey]::Enter) {
+            return $Options[$selectedIndex]
+        }
+    }
+}
+
+function Read-ArrowMultiSelect {
+    param(
+        [string] $Title,
+        [string[]] $Options,
+        [string[]] $DefaultSelected
+    )
+
+    if ($null -eq $Options -or $Options.Count -eq 0) {
+        throw "Multi-select options cannot be empty."
+    }
+
+    $selectedLookup = New-Object System.Collections.Generic.HashSet[string] ([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($defaultItem in $DefaultSelected) {
+        if ($Options -contains $defaultItem) {
+            [void]$selectedLookup.Add($defaultItem)
+        }
+    }
+
+    if ($selectedLookup.Count -eq 0) {
+        foreach ($item in $Options) {
+            [void]$selectedLookup.Add($item)
+        }
+    }
+
+    $cursorIndex = 0
+    while ($true) {
+        Clear-Host
+        Write-Host "SDX Updater" -ForegroundColor Cyan
+        Write-Host $Title -ForegroundColor White
+        Write-Host "Use Up/Down arrows, Space to toggle, A for all, Enter to continue." -ForegroundColor DarkGray
+        Write-Host ""
+
+        for ($index = 0; $index -lt $Options.Count; $index++) {
+            $option = $Options[$index]
+            $isChecked = $selectedLookup.Contains($option)
+            $check = if ($isChecked) { "[x]" } else { "[ ]" }
+
+            if ($index -eq $cursorIndex) {
+                Write-Host ("> " + $check + " " + $option) -ForegroundColor Yellow
+            } elseif ($isChecked) {
+                Write-Host ("  " + $check + " " + $option) -ForegroundColor Green
+            } else {
+                Write-Host ("  " + $check + " " + $option) -ForegroundColor Gray
+            }
+        }
+
+        $key = [Console]::ReadKey($true).Key
+        if ($key -eq [ConsoleKey]::UpArrow) {
+            if ($cursorIndex -gt 0) {
+                $cursorIndex--
+            }
+            continue
+        }
+
+        if ($key -eq [ConsoleKey]::DownArrow) {
+            if ($cursorIndex -lt ($Options.Count - 1)) {
+                $cursorIndex++
+            }
+            continue
+        }
+
+        if ($key -eq [ConsoleKey]::Spacebar) {
+            $current = $Options[$cursorIndex]
+            if ($selectedLookup.Contains($current)) {
+                if ($selectedLookup.Count -gt 1) {
+                    [void]$selectedLookup.Remove($current)
+                }
+            } else {
+                [void]$selectedLookup.Add($current)
+            }
+            continue
+        }
+
+        if ($key -eq [ConsoleKey]::A) {
+            if ($selectedLookup.Count -eq $Options.Count) {
+                $selectedLookup.Clear()
+                [void]$selectedLookup.Add($Options[0])
+            } else {
+                $selectedLookup.Clear()
+                foreach ($item in $Options) {
+                    [void]$selectedLookup.Add($item)
+                }
+            }
+            continue
+        }
+
+        if ($key -eq [ConsoleKey]::Enter) {
+            if ($selectedLookup.Count -eq 0) {
+                [void]$selectedLookup.Add($Options[0])
+            }
+
+            $result = @()
+            foreach ($option in $Options) {
+                if ($selectedLookup.Contains($option)) {
+                    $result += $option
+                }
+            }
+
+            return $result
+        }
+    }
+}
+
+function Read-StandalonePlanInteractive {
+    param([string] $DefaultAddinsRoot)
+
+    if (-not [string]::IsNullOrWhiteSpace($RevitAddinsFolder)) {
+        $DefaultAddinsRoot = $RevitAddinsFolder
+    }
+
+    $selectedChannel = if ($Channel -ieq "Preview") { "Preview" } else { "Stable" }
+    $defaultManifestUrl = Get-ManifestUrlForChannel -ChannelName $selectedChannel
+    $manifestUrlToUse = if ([string]::IsNullOrWhiteSpace($ManifestUrl)) { $defaultManifestUrl } else { $ManifestUrl }
+
+    $defaultsFromArguments = @()
+    if ($null -ne $StandaloneRevitVersions -and $StandaloneRevitVersions.Count -gt 0) {
+        foreach ($candidateRaw in $StandaloneRevitVersions) {
+            if ($null -eq $candidateRaw) {
+                continue
+            }
+
+            $candidate = $candidateRaw.ToString().Trim()
+            if ($SupportedRevitVersions -contains $candidate) {
+                $defaultsFromArguments += $candidate
+            }
+        }
+    }
+
+    $defaultVersions = if ($defaultsFromArguments.Count -gt 0) {
+        @($defaultsFromArguments | Sort-Object -Unique)
+    } else {
+        @($SupportedRevitVersions)
+    }
+
+    if (-not (Test-CanUseInteractiveConsole)) {
+        return [pscustomobject]@{
+            Channel = $selectedChannel
+            RevitAddinsFolder = $DefaultAddinsRoot
+            ManifestUrl = $manifestUrlToUse
+            FilesBaseUrlOverride = $StandaloneFilesBaseUrl
+            VersionOverride = $StandaloneVersion
+            RevitVersions = $defaultVersions
+        }
+    }
+
+    $channelDefaultIndex = 0
+    if ($selectedChannel -eq "Preview") {
+        $channelDefaultIndex = 1
+    }
+
+    $channelChoice = Read-ArrowMenuChoice -Title "Select update channel" -Options @("Stable", "Preview") -DefaultIndex $channelDefaultIndex
+    $selectedChannel = $channelChoice
+
+    $versionPickerOptions = @("All") + $SupportedRevitVersions
+    $versionPickerDefaults = @("All") + $defaultVersions
+    $selectedVersionChoices = Read-ArrowMultiSelect -Title "Select Revit versions to install/update" -Options $versionPickerOptions -DefaultSelected $versionPickerDefaults
+
+    if ($selectedVersionChoices -contains "All") {
+        $selectedVersions = @($SupportedRevitVersions)
+    } else {
+        $selectedVersions = @($selectedVersionChoices | Where-Object { $SupportedRevitVersions -contains $_ } | Sort-Object -Unique)
+    }
+
+    if ($selectedVersions.Count -eq 0) {
+        $selectedVersions = @($SupportedRevitVersions)
+    }
+
+    $defaultManifestUrl = Get-ManifestUrlForChannel -ChannelName $selectedChannel
+    if ([string]::IsNullOrWhiteSpace($ManifestUrl)) {
+        $manifestUrlToUse = $defaultManifestUrl
+    } else {
+        $manifestUrlToUse = $ManifestUrl
+    }
+
+    $summaryLines = @(
+        "Channel: $selectedChannel",
+        "Versions: $($selectedVersions -join ', ')",
+        "Addins path: $DefaultAddinsRoot",
+        "Manifest URL: $manifestUrlToUse"
+    )
+
+    if (-not [string]::IsNullOrWhiteSpace($StandaloneFilesBaseUrl)) {
+        $summaryLines += "FilesBaseUrl override: $StandaloneFilesBaseUrl"
+    }
+    if (-not [string]::IsNullOrWhiteSpace($StandaloneVersion)) {
+        $summaryLines += "Version override: $StandaloneVersion"
+    }
+
+    while ($true) {
+        Clear-Host
+        Write-Host "SDX Updater" -ForegroundColor Cyan
+        Write-Host "Review and confirm" -ForegroundColor White
+        Write-Host ""
+        foreach ($line in $summaryLines) {
+            Write-Host $line -ForegroundColor Gray
+        }
+        Write-Host ""
+        $confirmationChoice = Read-ArrowMenuChoice -Title "Continue with this setup?" -Options @("Install/Update now", "Cancel") -DefaultIndex 0
+        if ($confirmationChoice -eq "Install/Update now") {
+            break
+        }
+
+        throw "Standalone install/update cancelled by user."
+    }
+
+    return [pscustomobject]@{
+        Channel = $selectedChannel
+        RevitAddinsFolder = $DefaultAddinsRoot
+        ManifestUrl = $manifestUrlToUse
+        FilesBaseUrlOverride = $StandaloneFilesBaseUrl
+        VersionOverride = $StandaloneVersion
+        RevitVersions = @($selectedVersions | Sort-Object -Unique)
+    }
+}
+
+function Get-StandaloneManifest {
+    param([string] $ManifestUrlToUse)
+
+    $client = New-Object System.Net.WebClient
+    try {
+        $manifestJson = $client.DownloadString($ManifestUrlToUse)
+    }
+    finally {
+        $client.Dispose()
+    }
+
+    $manifest = $manifestJson | ConvertFrom-Json
+    if ($null -eq $manifest) {
+        throw "Could not parse version manifest."
+    }
+
+    return $manifest
+}
+
+function Invoke-StandaloneInstall {
+    $defaultRevitAddinsFolder = Join-Path $env:APPDATA "Autodesk\Revit\Addins"
+    $plan = Read-StandalonePlanInteractive -DefaultAddinsRoot $defaultRevitAddinsFolder
+
+    if ([string]::IsNullOrWhiteSpace($plan.RevitAddinsFolder)) {
+        throw "Addins folder cannot be empty."
+    }
+
+    $filesBaseUrlToUse = $plan.FilesBaseUrlOverride
+    $targetVersionToUse = $plan.VersionOverride
+
+    if ([string]::IsNullOrWhiteSpace($filesBaseUrlToUse) -or [string]::IsNullOrWhiteSpace($targetVersionToUse)) {
+        if ([string]::IsNullOrWhiteSpace($plan.ManifestUrl)) {
+            throw "Manifest URL is required unless both FilesBaseUrl and Version overrides are set."
+        }
+
+        $manifest = Get-StandaloneManifest -ManifestUrlToUse $plan.ManifestUrl
+        if ([string]::IsNullOrWhiteSpace($filesBaseUrlToUse)) {
+            $filesBaseUrlToUse = [string]$manifest.filesBaseUrl
+        }
+        if ([string]::IsNullOrWhiteSpace($targetVersionToUse)) {
+            $targetVersionToUse = [string]$manifest.version
+        }
+    }
+
+    if ([string]::IsNullOrWhiteSpace($filesBaseUrlToUse)) {
+        throw "Manifest did not provide filesBaseUrl."
+    }
+
+    if ([string]::IsNullOrWhiteSpace($targetVersionToUse)) {
+        throw "Manifest did not provide version."
+    }
+
+    $existingDllPaths = @()
+    foreach ($revitVersion in $plan.RevitVersions) {
+        $existingDllPath = Join-Path $plan.RevitAddinsFolder "$revitVersion\SDX.dll"
+        if (Test-Path $existingDllPath) {
+            $existingDllPaths += $existingDllPath
+        }
+    }
+
+    if ($existingDllPaths.Count -gt 0) {
+        $filesAreUnlocked = Wait-ForAllFilesToUnlock -FilePaths $existingDllPaths -TimeoutSeconds 10
+        if (-not $filesAreUnlocked) {
+            throw "Some target files are locked. Close Revit and run the updater again."
+        }
+    }
+
+    $baseUrl = $filesBaseUrlToUse.TrimEnd('/')
+    $downloadClient = New-Object System.Net.WebClient
+    try {
+        foreach ($revitVersion in $plan.RevitVersions) {
+            $destinationFolder = Join-Path $plan.RevitAddinsFolder $revitVersion
+            if (-not (Test-Path $destinationFolder)) {
+                New-Item -ItemType Directory -Path $destinationFolder -Force | Out-Null
+            }
+
+            Write-Log "Installing SDX for Revit $revitVersion on channel $($plan.Channel)..."
+            foreach ($fileName in $FilesToUpdate) {
+                $extension = [System.IO.Path]::GetExtension($fileName)
+                $remoteFileName = "SDX-$revitVersion$extension"
+                $downloadUrl = "$baseUrl/$remoteFileName"
+                $destinationFilePath = Join-Path $destinationFolder $fileName
+
+                Write-Log "  Downloading: $downloadUrl"
+                $downloadClient.DownloadFile($downloadUrl, $destinationFilePath)
+                Write-Log "  Installed to: $destinationFilePath"
+            }
+        }
+    }
+    finally {
+        $downloadClient.Dispose()
+    }
+
+    $versionsText = ($plan.RevitVersions | Sort-Object) -join ", "
+    return [pscustomobject]@{
+        Version = $targetVersionToUse
+        RevitVersions = @($plan.RevitVersions | Sort-Object)
+        RevitVersionsText = $versionsText
+        RevitAddinsFolder = $plan.RevitAddinsFolder
     }
 }
 
@@ -478,6 +930,13 @@ try {
     }
 
     try {
+        if (Test-ShouldRunStandalone) {
+            Write-Log "Starting standalone install/update flow."
+            Write-Log "Channel request  : $Channel"
+            $standaloneResult = Invoke-StandaloneInstall
+            Complete-Run -Success $true -Message "Installed SDX Tools $($standaloneResult.Version) for Revit $($standaloneResult.RevitVersionsText)." -ExitCode 0
+        }
+
         Assert-MainParameters
 
         Write-Log "SDX Tools updater started."
@@ -618,6 +1077,11 @@ try {
     }
     catch {
         Write-Log "ERROR: $($_.Exception.Message)"
+
+        if (Test-ShouldRunStandalone) {
+            Complete-Run -Success $false -Message "Standalone install/update failed: $($_.Exception.Message)" -ExitCode 1
+        }
+
         Show-MessageBox `
             -Message "SDX Tools update to $NewVersion failed.`n`nError: $($_.Exception.Message)`n`nCheck $LogFile for details." `
             -Title   "SDX Tools Update Failed" `

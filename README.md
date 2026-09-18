@@ -20,6 +20,26 @@ SDX Tools adds a dedicated **SDX** ribbon tab to Revit with tools that close gap
 
 ## Installation
 
+### Recommended: SDX-Updater.exe (first install + updates)
+
+1. Download `SDX-Updater.exe` from the latest release assets.
+2. Run `SDX-Updater.exe` (Revit can stay closed for this flow).
+3. Choose your channel (`Stable` or `Preview`) and target Revit versions.
+4. Click `Install/Update`.
+
+The updater can be run any time to get the latest version without starting Revit first, and it can switch channels before install/update.
+
+### Transparent alternative: updater.ps1 (first install + updates)
+
+1. Download `updater.ps1` from the latest release assets.
+2. Run: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\updater.ps1`
+3. Choose your channel (`Stable` or `Preview`) and target Revit versions.
+4. Press Enter to continue with defaults, or use advanced overrides when prompted.
+
+You can also preselect a channel non-interactively: `-Channel Preview`.
+
+### Manual install (copy files yourself)
+
 Close Revit first. Then copy `SDX.addin` and `SDX.dll` for your Revit version into your per-user Revit Addins folder:
 
 ```
@@ -33,7 +53,7 @@ For example, for Revit 2026:
 %APPDATA%\Autodesk\Revit\Addins\2026\SDX.dll
 ```
 
-Both files must sit directly in the version folder (not a subfolder). Start Revit — the **SDX** tab appears on the ribbon. To update, close Revit and overwrite both files; to uninstall, delete them.
+Both files must sit directly in the version folder (not a subfolder). Start Revit - the **SDX** tab appears on the ribbon. To update, close Revit and overwrite both files; to uninstall, delete them.
 
 ## Tools
 
@@ -151,6 +171,8 @@ None of this requires knowing who you are or anything about your project. The da
 | Install id | a random GUID, generated on your machine | Distinguishes installs so "20 people used this" is separable from "one person used it 20 times" |
 | SDX version | `0.4.0-preview` | Correlates failures with releases |
 | Revit version | `2026` | Shows which Revit versions are still worth supporting |
+| Revit build | `20260903_1515(x64)` | Distinguishes updated vs not-yet-updated installs within the same Revit major version |
+| Runtime target | `net8.0-windows`, `net10.0-windows`, or `net48` | Shows which runtime path each install actually executes |
 | Update channel | `Stable` or `Preview` | Shows whether preview builds are less stable |
 | Date | `2026-08-13` | The day the tools were used |
 
@@ -227,7 +249,9 @@ Rules: always bump before releasing; never go backwards; use three parts only (`
 
 ## Updater internals
 
-`SDX/Update/UpdateService.cs` reads `version.json` from the public repo at startup (rate-limited to once per 6 hours). If a newer version is found, it prompts the user and sets a deferred flag. On Revit shutdown, it downloads `updater.ps1` to `%TEMP%\SdxUpdate\`, **verifies it against the `updaterSha256` in the manifest**, and only then launches it with:
+`SDX/Update/UpdateService.cs` reads `version.json` from the public repo at startup (rate-limited to once per 6 hours). If a newer version is found, it prompts the user and sets a deferred flag. On Revit shutdown, it first tries `SDX-Updater.exe` (checksum-verified via `updaterExeSha256`) and falls back to `updater.ps1` (checksum-verified via `updaterSha256`) when needed.
+
+Fallback script launch command:
 
 ```
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File updater.ps1 `
@@ -246,9 +270,16 @@ The script runs with `-ExecutionPolicy Bypass`, so it is hashed before it runs. 
 | `filesBaseUrl` | Release download base — `updater.ps1` appends `/SDX-{revitVersion}.dll` etc. |
 | `updaterUrl` | Direct URL to `updater.ps1` |
 | `updaterSha256` | SHA-256 of `updater.ps1`, verified before it is executed. Required |
+| `updaterExeUrl` | Direct URL to `SDX-Updater.exe` |
+| `updaterExeSha256` | SHA-256 of `SDX-Updater.exe`, verified before it is executed |
 | `downloadPageUrl` | Fallback landing page if updater launch fails |
 | `notes` | Release notes shown in the Revit toast |
 
-**Update channels:** Preferences → Advanced → **Update channel**. `Stable` (default) only prompts for full releases. `Preview` also prompts for `-preview.N` builds. Switching from Preview back to Stable will offer a downgrade if the current installed version is a preview.
+**Update channels:**
+- In Revit: Preferences -> Advanced -> **Update channel**.
+- Without Revit: run `SDX-Updater.exe` and choose channel in the installer dialog.
+- Without Revit (transparent script path): run `updater.ps1` and choose channel in the prompts, or pass `-Channel Stable|Preview`.
+
+`Stable` (default) only prompts for full releases. `Preview` also prompts for `-preview.N` builds. Switching from Preview back to Stable will offer a downgrade if the current installed version is a preview.
 
 **One-time GitHub setup:** Create `Stibbz/SDX-Tools` with GitHub Pages on `main`/root. Generate a PAT with `repo` scope and add it as an Actions secret named `PAGES_DEPLOY_PAT` on this repo.
