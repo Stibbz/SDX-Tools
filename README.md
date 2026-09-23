@@ -20,27 +20,19 @@ SDX Tools adds a dedicated **SDX** ribbon tab to Revit with tools that close gap
 
 ## Installation
 
-### Recommended: SDX-Updater.exe (first install + updates)
+### Recommended: SDX-Updater.exe (first install + updates) 
+_SDX-Updater.ps1 is an alternative to those who can't or don't want to run an executable._
 
 1. Download `SDX-Updater.exe` from the latest release assets.
 2. Run `SDX-Updater.exe` (Revit can stay closed for this flow).
 3. Choose your channel (`Stable` or `Preview`) and target Revit versions.
 4. Click `Install/Update`.
 
-The updater can be run any time to get the latest version without starting Revit first, and it can switch channels before install/update.
-
-### Transparent alternative: SDX-Updater.ps1 (first install + updates)
-
-1. Download `SDX-Updater.ps1` from the latest release assets.
-2. Run: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\SDX-Updater.ps1`
-3. Choose your channel (`Stable` or `Preview`) and target Revit versions.
-4. Press Enter to continue with defaults, or use advanced overrides when prompted.
-
-You can also preselect a channel non-interactively: `-Channel Preview`.
+Either updater can be run at any time to get the latest version without starting Revit first, and it can switch channels before install/update.
 
 ### Manual install (copy files yourself)
 
-Close Revit first. Then copy `SDX.addin` and `SDX.dll` for your Revit version into your per-user Revit Addins folder:
+Make sure Revit is closed first. Then copy `SDX.addin` and `SDX.dll` for your Revit version into your per-user Revit Addins folder:
 
 ```
 %APPDATA%\Autodesk\Revit\Addins\<version>\
