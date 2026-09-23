@@ -441,6 +441,45 @@ function Get-StandaloneManifest {
     return $manifest
 }
 
+function Save-StandaloneChannelPreference {
+    param([string] $ChannelName)
+
+    try {
+        $settingsDirectory = Join-Path $env:APPDATA "SDX"
+        $preferencesPath = Join-Path $settingsDirectory "Update.xml"
+        if (-not (Test-Path $settingsDirectory)) {
+            New-Item -ItemType Directory -Path $settingsDirectory -Force | Out-Null
+        }
+
+        $preferences = New-Object System.Xml.XmlDocument
+        if (Test-Path $preferencesPath) {
+            $preferences.Load($preferencesPath)
+        } else {
+            [void]$preferences.AppendChild($preferences.CreateElement("UpdatePrefs"))
+        }
+
+        $root = $preferences.DocumentElement
+        if ($null -eq $root -or $root.Name -ne "UpdatePrefs") {
+            $preferences.RemoveAll()
+            $root = $preferences.CreateElement("UpdatePrefs")
+            [void]$preferences.AppendChild($root)
+        }
+
+        $channelElement = $root.SelectSingleNode("Channel")
+        if ($null -eq $channelElement) {
+            $channelElement = $preferences.CreateElement("Channel")
+            [void]$root.AppendChild($channelElement)
+        }
+
+        $channelElement.InnerText = if ($ChannelName -ieq "Preview") { "Preview" } else { "Main" }
+        $preferences.Save($preferencesPath)
+        Write-Log "Saved standalone channel preference: $($channelElement.InnerText)."
+    }
+    catch {
+        Write-Log "WARNING: could not save standalone channel preference: $($_.Exception.Message)"
+    }
+}
+
 function Invoke-StandaloneInstall {
     $defaultRevitAddinsFolder = Join-Path $env:APPDATA "Autodesk\Revit\Addins"
     $plan = Read-StandalonePlanInteractive -DefaultAddinsRoot $defaultRevitAddinsFolder
@@ -514,6 +553,8 @@ function Invoke-StandaloneInstall {
     finally {
         $downloadClient.Dispose()
     }
+
+    Save-StandaloneChannelPreference -ChannelName $plan.Channel
 
     $versionsText = ($plan.RevitVersions | Sort-Object) -join ", "
     return [pscustomobject]@{

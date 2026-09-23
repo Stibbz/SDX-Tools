@@ -29,10 +29,10 @@ SDX Tools adds a dedicated **SDX** ribbon tab to Revit with tools that close gap
 
 The updater can be run any time to get the latest version without starting Revit first, and it can switch channels before install/update.
 
-### Transparent alternative: updater.ps1 (first install + updates)
+### Transparent alternative: SDX-Updater.ps1 (first install + updates)
 
-1. Download `updater.ps1` from the latest release assets.
-2. Run: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\updater.ps1`
+1. Download `SDX-Updater.ps1` from the latest release assets.
+2. Run: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\SDX-Updater.ps1`
 3. Choose your channel (`Stable` or `Preview`) and target Revit versions.
 4. Press Enter to continue with defaults, or use advanced overrides when prompted.
 
@@ -226,7 +226,7 @@ The public distribution repo (`Stibbz/SDX-Tools`) is updated automatically by `.
 4. Publish a GitHub Release on this repo. The workflow fires and:
    - Builds all four Revit targets (2024, 2025, 2026, 2027)
    - Copies the built folders to the public repo
-   - Generates and pushes `version.json` (including the `updater.ps1` SHA-256) and `updater.ps1`
+   - Generates and pushes `version.json` (including the `SDX-Updater.ps1` SHA-256) and `SDX-Updater.ps1`
    - Attaches a `.zip` to the GitHub Release for manual downloads
 
 **Versioning (`MAJOR.MINOR.PATCH`):**
@@ -249,27 +249,27 @@ Rules: always bump before releasing; never go backwards; use three parts only (`
 
 ## Updater internals
 
-`SDX/Update/UpdateService.cs` reads `version.json` from the public repo at startup (rate-limited to once per 6 hours). If a newer version is found, it prompts the user and sets a deferred flag. On Revit shutdown, it first tries `SDX-Updater.exe` (checksum-verified via `updaterExeSha256`) and falls back to `updater.ps1` (checksum-verified via `updaterSha256`) when needed.
+`SDX/Update/UpdateService.cs` reads `version.json` from the public repo at startup (rate-limited to once per 6 hours). If a newer version is found, it prompts the user and sets a deferred flag. On Revit shutdown, it first tries `SDX-Updater.exe` (checksum-verified via `updaterExeSha256`) and falls back to `SDX-Updater.ps1` (checksum-verified via `updaterSha256`) when needed.
 
 Fallback script launch command:
 
 ```
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File updater.ps1 `
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File SDX-Updater.ps1 `
     -RevitPid <pid> -FilesBaseUrl <url> -RevitAddinsFolder <%AppData%\Autodesk\Revit\Addins>
 ```
 
-`updater.ps1` waits for Revit to exit, re-checks the installed version, waits for `SDX.dll` to unlock, then downloads the flat per-Revit-version release assets (`SDX-2025.dll`, `SDX-2025.addin`, ...) from `$FilesBaseUrl` into each installed version folder. Log: `%AppData%\SDX\updater.log`.
+`SDX-Updater.ps1` waits for Revit to exit, re-checks the installed version, waits for `SDX.dll` to unlock, then downloads the flat per-Revit-version release assets (`SDX-2025.dll`, `SDX-2025.addin`, ...) from `$FilesBaseUrl` into each installed version folder. Log: `%AppData%\SDX\updater.log`.
 
-The script runs with `-ExecutionPolicy Bypass`, so it is hashed before it runs. A mismatch **or a manifest with no `updaterSha256`** aborts the update and logs an error — refusing to update is always safer than running an unverified script. The release workflow hashes the exact `updater.ps1` it publishes, so this needs no manual step.
+The script runs with `-ExecutionPolicy Bypass`, so it is hashed before it runs. A mismatch **or a manifest with no `updaterSha256`** aborts the update and logs an error — refusing to update is always safer than running an unverified script. The release workflow hashes the exact `SDX-Updater.ps1` it publishes, so this needs no manual step.
 
 **`version.json` fields** (deserialized by `UpdateManifest.cs`):
 
 | Key | Meaning |
 |-----|---------|
 | `version` | Latest published version |
-| `filesBaseUrl` | Release download base — `updater.ps1` appends `/SDX-{revitVersion}.dll` etc. |
-| `updaterUrl` | Direct URL to `updater.ps1` |
-| `updaterSha256` | SHA-256 of `updater.ps1`, verified before it is executed. Required |
+| `filesBaseUrl` | Release download base — `SDX-Updater.ps1` appends `/SDX-{revitVersion}.dll` etc. |
+| `updaterUrl` | Direct URL to `SDX-Updater.ps1` |
+| `updaterSha256` | SHA-256 of `SDX-Updater.ps1`, verified before it is executed. Required |
 | `updaterExeUrl` | Direct URL to `SDX-Updater.exe` |
 | `updaterExeSha256` | SHA-256 of `SDX-Updater.exe`, verified before it is executed |
 | `downloadPageUrl` | Fallback landing page if updater launch fails |
@@ -278,7 +278,7 @@ The script runs with `-ExecutionPolicy Bypass`, so it is hashed before it runs. 
 **Update channels:**
 - In Revit: Preferences -> Advanced -> **Update channel**.
 - Without Revit: run `SDX-Updater.exe` and choose channel in the installer dialog.
-- Without Revit (transparent script path): run `updater.ps1` and choose channel in the prompts, or pass `-Channel Stable|Preview`.
+- Without Revit (transparent script path): run `SDX-Updater.ps1` and choose channel in the prompts, or pass `-Channel Stable|Preview`.
 
 `Stable` (default) only prompts for full releases. `Preview` also prompts for `-preview.N` builds. Switching from Preview back to Stable will offer a downgrade if the current installed version is a preview.
 
