@@ -4,7 +4,7 @@
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/SDX-Updater.ps1",
   "updaterSha256": "f902683ceb81bf54260d7654be511f39350c013de227eaadd261aa56e0093e25",
   "updaterExeUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.4/SDX-Updater.exe",
-  "updaterExeSha256": "36be898341e3eeb2d5b8b1351e4b96fe2ab7fe52eace8f9d431f0a30de638053",
+  "updaterExeSha256": "4dca9e1eab0522adc5807fc4fd8e10d943939fa66bd2def07befbdfc92d7a445",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
   "notes": "- New unfinished **View Template Snapshot** tool exports reusable view-template settings to JSON and imports them into a view, its active template, or a selected template\n- Snapshots include template parameters, visibility/graphics overrides, imported CAD layers, filters, and supported Revit link settings, with a pre-import comparison and a report of skipped project content\n- New unfinished **CAD Layer Filter** tool saves reusable CAD layer rules and applies staged Visibility/Graphics overrides through an editable preview\n- New **Project Tab Colors** settings let you colour Revit document tabs by project, with configurable colours and enabled state stored in Preferences\n- **Match Sheet Positions** now aligns crop regions with their mapped viewports and presents mappings in a predictable order\n- **Batch Link Files** handles imported CAD and cloud CAD links more reliably\n- **Find & Replace** has clearer, selectable preview rows and better preview columns"
 }
