@@ -146,12 +146,12 @@ Visual Studio 2022 can open `SDX Tools.slnx` and build the 2024/2025/2026 target
 **Deploy:** Close Revit, then run:
 
 ```powershell
-.\deploySDX-Tools.ps1
+.\Deploy-LocalPrerelease.ps1
 ```
 
 Copies `deploy/2024/`, `deploy/2025/`, `deploy/2026/`, and `deploy/2027/` to `%AppData%\Autodesk\Revit\Addins\{version}\`.
 
-**Developing:** Load `bin\Debug\net8.0-windows\SDX.dll` directly via Revit's Addin Manager — this path is never locked by a running Revit instance.
+**Developing:** Load `bin\Debug\net8.0-windows\SDX.Debug.dll` directly via Revit's Addin Manager — this path is never locked by a running Revit instance. Debug builds have a distinct assembly identity, so they can coexist with the deployed `SDX.dll` that owns the SDX ribbon.
 
 ---
 
@@ -209,7 +209,7 @@ Revit 2024/     # Target project for R2024 (net48)
 Revit 2025/     # Target project for R2025 (net8.0-windows)
 Revit 2026/     # Target project for R2026 (net8.0-windows)
 Revit 2027/     # Target project for R2027 (net10.0-windows)
-deploy/         # Staging folder for deploySDX-Tools.ps1
+deploy/         # Staging folder for Deploy-LocalPrerelease.ps1
 ```
 
 ---

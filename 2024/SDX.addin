@@ -5,7 +5,7 @@
   Deployment: copy this entire folder (SDX.addin + SDX.dll) to
     %AppData%\Autodesk\Revit\Addins\2024\
 
-  Development: load bin\Debug\net48\SDX.dll via the Addin
+  Development: load bin\Debug\net48\SDX.Debug.dll via the Addin
     Manager — that file is never locked by the ribbon Revit instance.
 -->
 <RevitAddIns>
