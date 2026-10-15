@@ -49,7 +49,7 @@
   <AddIn Type="Command">
     <Name>SDX: Manage Addins</Name>
     <Assembly>SDX.dll</Assembly>
-    <FullClassName>SDX.AddinManager.AddinManagerCommand</FullClassName>
+    <FullClassName>SDX.AddinsVisibility.AddinsVisibilityCommand</FullClassName>
     <ClientId>d3a7f821-9c14-4b3e-a501-6f2e8c9d0b47</ClientId>
     <VendorId>SDraak</VendorId>
     <Text>Manage Addins</Text>
@@ -109,7 +109,7 @@
   <AddIn Type="Command">
     <Name>SDX: Batch Link Files</Name>
     <Assembly>SDX.dll</Assembly>
-    <FullClassName>SDX.BatchLink.BatchLinkCommand</FullClassName>
+    <FullClassName>SDX.BatchLinkFiles.BatchLinkFilesCommand</FullClassName>
     <ClientId>b7c3e912-4f85-4d1a-9c6e-2a8f0d5e7b34</ClientId>
     <VendorId>SDraak</VendorId>
     <Text>Batch Link Files</Text>
@@ -149,7 +149,7 @@
   <AddIn Type="Command">
     <Name>SDX: Detail Lines Length</Name>
     <Assembly>SDX.dll</Assembly>
-    <FullClassName>SDX.TotalDetailLinesLength.TotalDetailLinesLength</FullClassName>
+    <FullClassName>SDX.DetailLinesLength.DetailLinesLengthCommand</FullClassName>
     <ClientId>f8a2c145-9e3b-4d7f-a0c6-1e5d8b3f7a92</ClientId>
     <VendorId>SDraak</VendorId>
     <Text>Detail Lines Length</Text>
@@ -159,7 +159,7 @@
   <AddIn Type="Command">
     <Name>SDX: Toggle Section Box</Name>
     <Assembly>SDX.dll</Assembly>
-    <FullClassName>SDX.ToggleBoxVisibility.ToggleSectionBoxCommand</FullClassName>
+    <FullClassName>SDX.SectionScopeBox.ToggleSectionBoxCommand</FullClassName>
     <ClientId>c7e2a914-3f85-4d1b-9a6e-0b8c5f2d7e43</ClientId>
     <VendorId>SDraak</VendorId>
     <Text>Toggle Section Box</Text>
@@ -169,7 +169,7 @@
   <AddIn Type="Command">
     <Name>SDX: Toggle Scope Boxes</Name>
     <Assembly>SDX.dll</Assembly>
-    <FullClassName>SDX.ToggleBoxVisibility.ToggleScopeBoxCommand</FullClassName>
+    <FullClassName>SDX.SectionScopeBox.ToggleScopeBoxCommand</FullClassName>
     <ClientId>d4f3b025-4a96-5e2c-ab7f-1c9d603e8f54</ClientId>
     <VendorId>SDraak</VendorId>
     <Text>Toggle Scope Boxes</Text>
@@ -179,7 +179,7 @@
   <AddIn Type="Command">
     <Name>SDX: Flip Each Element</Name>
     <Assembly>SDX.dll</Assembly>
-    <FullClassName>SDX.FlipEachElementMidpoint.FlipEachElementMidpoint</FullClassName>
+    <FullClassName>SDX.FlipEachElement.FlipEachElementCommand</FullClassName>
     <ClientId>4be768c6-4fdc-45ae-a0bf-04525fba96e3</ClientId>
     <VendorId>SDraak</VendorId>
     <Text>Flip Each Element</Text>
