@@ -25,6 +25,7 @@ param(
     [int]    $RevitPid,
     [string] $FilesBaseUrl,
     [string] $RevitAddinsFolder,
+    [string] $FilesManifestPath,
     [string] $NewVersion,
     [switch] $TestWaitWindow,
     [int]    $TestWaitSeconds = 20,
@@ -77,6 +78,10 @@ function Assert-MainParameters {
 
     if ([string]::IsNullOrWhiteSpace($RevitAddinsFolder)) {
         throw "Missing required parameter: -RevitAddinsFolder"
+    }
+
+    if ([string]::IsNullOrWhiteSpace($FilesManifestPath)) {
+        throw "Missing required parameter: -FilesManifestPath"
     }
 
     if ([string]::IsNullOrWhiteSpace($NewVersion)) {
@@ -441,6 +446,89 @@ function Get-StandaloneManifest {
     return $manifest
 }
 
+function Get-FileHashesFromManifest {
+    param([object] $Manifest)
+
+    if ($null -eq $Manifest) {
+        throw "Manifest did not provide filesManifest. Refusing to replace unverified files."
+    }
+
+    # assetSha256 was the initial release-manifest name. Prefer filesManifest
+    # when present, while retaining compatibility during the manifest rollout.
+    $manifestHashes = if ($null -ne $Manifest.filesManifest) { $Manifest.filesManifest } else { $Manifest.assetSha256 }
+    if ($null -eq $manifestHashes) {
+        throw "Manifest did not provide filesManifest. Refusing to replace unverified files."
+    }
+
+    $hashes = @{}
+    foreach ($property in $manifestHashes.PSObject.Properties) {
+        $name = [string]$property.Name
+        $hash = ([string]$property.Value).Trim()
+        if ([string]::IsNullOrWhiteSpace($name) -or $hash -notmatch '^[0-9a-fA-F]{64}$') {
+            throw "Manifest contains a missing or malformed checksum."
+        }
+        $hashes[$name] = $hash
+    }
+
+    if ($hashes.Count -eq 0) {
+        throw "Manifest filesManifest is empty. Refusing to replace unverified files."
+    }
+
+    return $hashes
+}
+
+function Get-FileHashesFromPath {
+    param([string] $Path)
+
+    if (-not (Test-Path -LiteralPath $Path)) {
+        throw "Files manifest was not found: $Path"
+    }
+
+    try {
+        $manifest = (Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json)
+        return Get-FileHashesFromManifest -Manifest ([pscustomobject]@{ filesManifest = $manifest })
+    }
+    finally {
+        Remove-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue
+    }
+}
+
+function Assert-RequiredFileHashes {
+    param([hashtable] $FileHashes, [string[]] $RevitVersions)
+
+    foreach ($revitVersion in $RevitVersions) {
+        foreach ($fileName in $FilesToUpdate) {
+            $remoteFileName = "SDX-$revitVersion$([System.IO.Path]::GetExtension($fileName))"
+            if (-not $FileHashes.ContainsKey($remoteFileName)) {
+                throw "Manifest does not provide a checksum for $remoteFileName. Refusing to replace it."
+            }
+        }
+    }
+}
+
+function Install-VerifiedFile {
+    param(
+        [System.Net.WebClient] $Client,
+        [string] $DownloadUrl,
+        [string] $DestinationFilePath,
+        [string] $ExpectedHash
+    )
+
+    $temporaryFilePath = "$DestinationFilePath.$([Guid]::NewGuid().ToString('N')).download"
+    try {
+        $Client.DownloadFile($DownloadUrl, $temporaryFilePath)
+        $actualHash = (Get-FileHash -LiteralPath $temporaryFilePath -Algorithm SHA256).Hash
+        if (-not $actualHash.Equals($ExpectedHash, [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "Checksum mismatch for $(Split-Path $DestinationFilePath -Leaf). Refusing to replace the installed file."
+        }
+
+        Move-Item -LiteralPath $temporaryFilePath -Destination $DestinationFilePath -Force
+    }
+    finally {
+        Remove-Item -LiteralPath $temporaryFilePath -Force -ErrorAction SilentlyContinue
+    }
+}
+
 function Save-StandaloneChannelPreference {
     param([string] $ChannelName)
 
@@ -488,22 +576,18 @@ function Invoke-StandaloneInstall {
         throw "Addins folder cannot be empty."
     }
 
-    $filesBaseUrlToUse = $plan.FilesBaseUrlOverride
-    $targetVersionToUse = $plan.VersionOverride
-
-    if ([string]::IsNullOrWhiteSpace($filesBaseUrlToUse) -or [string]::IsNullOrWhiteSpace($targetVersionToUse)) {
-        if ([string]::IsNullOrWhiteSpace($plan.ManifestUrl)) {
-            throw "Manifest URL is required unless both FilesBaseUrl and Version overrides are set."
-        }
-
-        $manifest = Get-StandaloneManifest -ManifestUrlToUse $plan.ManifestUrl
-        if ([string]::IsNullOrWhiteSpace($filesBaseUrlToUse)) {
-            $filesBaseUrlToUse = [string]$manifest.filesBaseUrl
-        }
-        if ([string]::IsNullOrWhiteSpace($targetVersionToUse)) {
-            $targetVersionToUse = [string]$manifest.version
-        }
+    if ([string]::IsNullOrWhiteSpace($plan.ManifestUrl)) {
+        throw "Manifest URL is required to verify update files."
     }
+
+    # Even when a caller overrides the display/version URL, standalone updates
+    # always obtain their expected file hashes from the selected channel manifest.
+    $manifest = Get-StandaloneManifest -ManifestUrlToUse $plan.ManifestUrl
+    $fileHashes = Get-FileHashesFromManifest -Manifest $manifest
+    Assert-RequiredFileHashes -FileHashes $fileHashes -RevitVersions $plan.RevitVersions
+
+    $filesBaseUrlToUse = if ([string]::IsNullOrWhiteSpace($plan.FilesBaseUrlOverride)) { [string]$manifest.filesBaseUrl } else { $plan.FilesBaseUrlOverride }
+    $targetVersionToUse = if ([string]::IsNullOrWhiteSpace($plan.VersionOverride)) { [string]$manifest.version } else { $plan.VersionOverride }
 
     if ([string]::IsNullOrWhiteSpace($filesBaseUrlToUse)) {
         throw "Manifest did not provide filesBaseUrl."
@@ -545,7 +629,7 @@ function Invoke-StandaloneInstall {
                 $destinationFilePath = Join-Path $destinationFolder $fileName
 
                 Write-Log "  Downloading: $downloadUrl"
-                $downloadClient.DownloadFile($downloadUrl, $destinationFilePath)
+                Install-VerifiedFile -Client $downloadClient -DownloadUrl $downloadUrl -DestinationFilePath $destinationFilePath -ExpectedHash $fileHashes[$remoteFileName]
                 Write-Log "  Installed to: $destinationFilePath"
             }
         }
@@ -979,6 +1063,7 @@ try {
         }
 
         Assert-MainParameters
+        $fileHashes = Get-FileHashesFromPath -Path $FilesManifestPath
 
         Write-Log "SDX Tools updater started."
         Write-Log "Revit process ID : $RevitPid"
@@ -1053,6 +1138,8 @@ try {
             exit 0
         }
 
+        Assert-RequiredFileHashes -FileHashes $fileHashes -RevitVersions $installedVersionFolders
+
         # Step 5: Confirm the existing DLL files are no longer locked by Revit.
         $existingDllPaths = @()
         foreach ($revitVersion in $installedVersionFolders) {
@@ -1094,7 +1181,7 @@ try {
                 $destinationFilePath = Join-Path $destinationFolder $fileName
 
                 Write-Log "  Downloading: $downloadUrl"
-                $downloadClient.DownloadFile($downloadUrl, $destinationFilePath)
+                Install-VerifiedFile -Client $downloadClient -DownloadUrl $downloadUrl -DestinationFilePath $destinationFilePath -ExpectedHash $fileHashes[$remoteFileName]
                 Write-Log "  Installed to: $destinationFilePath"
             }
 
