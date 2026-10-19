@@ -4,19 +4,19 @@
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/SDX-Updater.ps1",
   "updaterSha256": "c2badcfc36aaf4f19663e003dd8129f67ced24d4e379733745fee45b6ceec6ea",
   "updaterExeUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.6/SDX-Updater.exe",
-  "updaterExeSha256": "3510483bef8efd01f49b040e2dd69f1b4805270f59cc1a745c370806e9bb254f",
+  "updaterExeSha256": "3e71f96f867fa681f4f1df59d55caacb5e5b823fa8288884d05ed7f4b1b0b5f1",
   "assetSha256": {
-    "SDX-2024.dll": "24aea3b715c2b11931dd34f8e337c8ace0e167bd9c818a32d60c5f7cf467a9e4",
+    "SDX-2024.dll": "e6addc9e138137ba664c8e40494b77e4afa3a7b49c6504c18d280f42bbf91a00",
     "SDX-2024.addin": "d74e89b9c8ed9a2ef4056b1a967e9c8434cf6b8645c7173995ea6500abd708e1",
-    "SDX-2025.dll": "7cfc372f6374650c40add056f9e0a8f97479bf74a1ff363ad9991bdfd2aef3bb",
+    "SDX-2025.dll": "f1ff228270db922399fbaab7c6ea9b8a2e4190b61c2f1d87a3b4ac8fcd0152d7",
     "SDX-2025.addin": "a6907905b2ea97f45f0a0f4f43ef10fd3809cb0480c04df07a8f8061a8002840",
-    "SDX-2026.dll": "65d1f332ca3ff6f40b5c749998cf1506e48516056f98d2ec93860be9105ae197",
+    "SDX-2026.dll": "e7e1a888a19b7ad0cbc5a4d8c2f265e991ad6c523108c574b340187528b387f3",
     "SDX-2026.addin": "1d750c5966faed3cb096896a85c24c44106f233e28ebe0406daf3bb47aa2ff39",
-    "SDX-2027.dll": "9d20cc21ac8b372ce7ec69cd76c2b73338dc2661cc3328790eef7983d0c49537",
+    "SDX-2027.dll": "83b138f59bbbd84d286ab1d6f264ff135125a03efad46cb9a6984176bb1cf26b",
     "SDX-2027.addin": "89c1eda1856bef60d55b52f02538f1e888ee906ddae465ac47671296b21b30b5"
   },
   "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.6/SDX-Tools-0.4.6.zip",
-  "releaseZipSha256": "2e70dd822eccdc239aad99c510162088fff490144d45d4e9a7d43c9a619a0b1b",
+  "releaseZipSha256": "cac80e5f09051eb261440a4004220838c8a5ce51f58348cc067b69bc0da84e4f",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
-  "notes": "## 0.4.6\r\n\r\n- The updater now verifies the SHA-256 hash of every downloaded Revit add-in file before installing it\r\n- Release ZIP files and individual release assets now publish SHA-256 checksums, with a post-release verifier confirming the published downloads\r\n- A documented manual installation and verification route is now available for corporate environments or installations where running the EXE is not permitted\r\n\r\n## 0.4.5\r\n\r\n### Find & Replace\r\n\r\n- Find & Replace can now search and replace writable string parameters on title block instances, title block types, and their sheets\r\n- Choose the search targets explicitly, including text, tags, view names, and title blocks; the preview more clearly separates eligible, excluded, and unavailable rows\r\n\r\n### CAD Layer Manager\r\n\r\n- CAD Layer Manager now lets you stage visibility changes for whole imported-CAD groups as well as individual layers, and apply the changes to the active view or its template\r\n- Add projection and cut line/pattern, transparency, halftone, and colour overrides for selected CAD layers\r\n- Search all imported CAD layers independently from saved rule expressions; combine multiple expressions with **AND** or **OR**, and reset them when needed\r\n- Improved group interaction: expand or collapse groups, select or deselect all, select groups alongside layers, and keep collapsed groups and hidden parent categories clear and predictable\r\n\r\n### Parameter workflows\r\n\r\n- **Create Direct Filter** has been replaced by **Filter by Parameter**, with a guided parameter-filter workflow, reliable category picking, and back navigation\r\n- **Select by Parameter** now supports family and non-filterable parameters more reliably, handles duplicate parameter names and types, and has improved picker, wizard, and keyboard navigation\r\n\r\n### Other improvements\r\n\r\n- **View Template Snapshot** import preview now has keyboard navigation, selectable category hierarchies, selection counts, and category groups collapsed by default\r\n- **What's Changed** now renders Markdown, including headings, lists, emphasis, code, and links\r\n- **Tag CAD Layers** now validates positive numeric settings as you enter them; it remains a work-in-progress tool\r\n- Several tools have clearer names, including **Batch Link Files**, **Project Tab Colors**, **Section / Scope Box**, **Detail Lines Length**, and **Flip Each Element**; **Detail Lines Length** is now clearly marked unfinished\r\n- Preview windows remember their size, and editable fields across SDX dialogs have more predictable arrow-key, Escape, numeric-entry, and placeholder behaviour"
+  "notes": "**CAD Layer Manager**\r\n- You can now save and reuse sets of layer expressions, so common CAD layer searches don't have to be rebuilt each time\r\n- \r\n**Feedback**\r\n- Commands now show a brief toast notification when they finish, so you can see the result without opening a dialog\r\n- \r\n**Update window**\r\n- The release notes window opens larger, so the notes are easier to read"
 }
