@@ -2,200 +2,284 @@
 
 # SDX Tools
 
-**A Revit add-in for things that should be native, but aren't.**
-
-[Download the latest release](https://github.com/Stibbz/SDX-Tools/releases/latest)
+**A Revit addin for things that should be native, but aren't.**
 
 ![Revit 2024](https://img.shields.io/badge/Revit-2024-0696D7?style=flat-square&logo=autodesk&logoColor=white)
 ![Revit 2025](https://img.shields.io/badge/Revit-2025-0696D7?style=flat-square&logo=autodesk&logoColor=white)
 ![Revit 2026](https://img.shields.io/badge/Revit-2026-0696D7?style=flat-square&logo=autodesk&logoColor=white)
 ![Revit 2027](https://img.shields.io/badge/Revit-2027-0696D7?style=flat-square&logo=autodesk&logoColor=white)
+![.NET 8 / 10](https://img.shields.io/badge/.NET-8%20%2F%2010-512BD4?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-Windows-0078D4?style=flat-square)
+![Language](https://img.shields.io/badge/C%23-WPF-239120?style=flat-square)
 
 </div>
 
 ---
 
-SDX Tools adds a dedicated **SDX** ribbon tab to Revit with practical tools for repetitive jobs, missing workflows, CAD coordination, view management, sheets, and annotation.
+SDX Tools adds a dedicated **SDX** ribbon tab to Revit with tools that close gaps Autodesk left behind. Built by someone who uses Revit daily on large-scale civil engineering projects.
 
-It supports **Revit 2024, 2025, 2026, and 2027** on Windows.
+## Installation
 
-## Install
+### Recommended: SDX-Updater.exe (first install + updates)
 
-### Recommended: SDX Updater
+1. Download `SDX-Updater.exe` from the latest release assets.
+2. Run `SDX-Updater.exe` (Revit can stay closed for this flow).
+3. Choose your channel (`Stable` or `Preview`) and target Revit versions.
+4. Click `Install/Update`.
 
-1. Open the [latest release](https://github.com/Stibbz/SDX-Tools/releases/latest).
-2. Download and run **`SDX-Updater.exe`**.
-   - If needed, use **`SDX-Updater.ps1`** instead.
-3. Close Revit when prompted.
-4. Choose the Revit versions you want SDX Tools installed for.
-5. Choose **Stable** or **Preview**, then select **Install / Update**.
+The updater can be run any time to get the latest version without starting Revit first, and it can switch channels before install/update.
 
-The updater can install SDX Tools without starting Revit first. It also handles later updates and verifies downloaded updater files before running them.
+### Transparent alternative: SDX-Updater.ps1 (first install + updates)
 
-### Manual installation
+1. Download `SDX-Updater.ps1` from the latest release assets.
+2. Run: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\SDX-Updater.ps1`
+3. Choose your channel (`Stable` or `Preview`) and target Revit versions.
+4. Press Enter to continue with defaults, or use advanced overrides when prompted.
 
-If you prefer to install files yourself:
+You can also preselect a channel non-interactively: `-Channel Preview`.
 
-1. Close Revit.
-2. Download the matching `SDX-<year>.dll` and `SDX-<year>.addin` files from the latest release.
-3. Rename them to `SDX.dll` and `SDX.addin`.
-4. Copy both files directly into your per-user Revit add-ins folder:
+### Manual install (copy files yourself)
 
-```text
-%APPDATA%\Autodesk\Revit\Addins\<year>\
+Close Revit first. Then copy `SDX.addin` and `SDX.dll` for your Revit version into your per-user Revit Addins folder:
+
+```
+%APPDATA%\Autodesk\Revit\Addins\<version>\
 ```
 
-For Revit 2026:
+For example, for Revit 2026:
 
-```text
-%APPDATA%\Autodesk\Revit\Addins\2026\SDX.dll
+```
 %APPDATA%\Autodesk\Revit\Addins\2026\SDX.addin
+%APPDATA%\Autodesk\Revit\Addins\2026\SDX.dll
 ```
 
-Start Revit and look for the SDX ribbon tab.
-
-To update manually, close Revit and replace both files. To uninstall, delete both files.
-
-## Updates
-
-SDX Tools checks for updates when Revit starts and can also be updated through the standalone updater.
-
-- Stable is the default channel and receives completed releases.
-- Preview provides early access to upcoming releases.
-- Change channels in Preferences, or choose a channel in the standalone updater.
-
-## What’s new
-
-Recent improvements include:
-
-- Find & Replace can now work with writable title-block instance, title-block type, and sheet parameters.
-- CAD Layer Manager now supports imported-CAD group visibility, staged graphic overrides, rule expressions, and more predictable group selection.
-- Filter by Parameter replaces Create Direct Filter with a guided filter-creation workflow.
-- Select by Parameter better supports family parameters, non-filterable parameters, duplicate names, and keyboard-first navigation.
-- What’s Changed now renders Markdown release notes with headings, lists, emphasis, code, and links.
-
-See the latest release notes for the full list.
+Both files must sit directly in the version folder (not a subfolder). Start Revit - the **SDX** tab appears on the ribbon. To update, close Revit and overwrite both files; to uninstall, delete them.
 
 ## Tools
 
-Ribbon panels that contain no visible tools are hidden automatically. You can show or hide individual tools in Preferences, and your choices survive updates.
-
-WIP tools are usable but still being refined.
-Unfinished tools are hidden by default and should be enabled from Preferences only if you want to try them.
+Panels containing only hidden tools auto-hide from the ribbon. Each tool can be shown or hidden individually via Preferences — choices are remembered across updates.
 
 ### Manage
 
 | Tool | Description |
 |---|---|
-| Preferences | Configure SDX Tools, update settings, visibility choices, AutoSync, update channel, usage statistics, and related options. |
-| Send Feedback | Send an issue report, suggestion, or feedback directly from Revit. |
-| Batch Link Files | Link every DWG and RVT in a folder in one operation, with positioning and workset controls. Supports imported CAD and cloud CAD links, and can save before linking. |
-| Fix Line Patterns | Correct imported CAD line-pattern segment lengths from dash and gap values encoded in pattern names. Shows the planned changes before applying them. |
-| Template Activity Checker — Unfinished | Inspect whether view templates are actively used. Hidden by default. |
-| AutoSync | Configure automatic synchronization and saving intervals. |
-| Addins Visibility | Control the visibility of add-in tabs. |
-| Usage Counter | View local tool-usage counts and outcomes. |
-| Project Tab Colors | Colour Revit document tabs by project. |
+| **Preferences** | Configure AutoSync intervals, show or hide individual tools from the ribbon, manage addin tab visibility, view usage statistics, and set the update channel — all in one place. Visibility choices are remembered across updates. |
+| **Send Feedback** | Report issues or suggestions directly from inside Revit. |
+| **Batch Link Files** | Link every DWG and RVT in a folder in one step, with control over workset assignment and positioning. |
+| **Fix Line Patterns** | Corrects imported CAD line pattern segment lengths by reading dash and gap sizes encoded in the pattern name. Lists every pattern and the lengths it will write for confirmation first. |
 
-### Selection and parameters
+### Selection
 
 | Tool | Description |
 |---|---|
-| Select by Parameter | Select model elements that match a chosen parameter value. Supports family and non-filterable parameters, with improved handling for duplicate parameter names and types. |
-| Filter by Parameter | Create a view filter through a guided workflow: choose categories, select a parameter, configure a rule, and apply the filter. |
-| Select by Family | Pick a placed element and select every matching family instance in the model. |
-| Phase Parameter Sync | Synchronize the locked SP_PhaseCreated[L] and SP_PhaseDemolished[L] parameters from their source values automatically or with a manual command. |
+| **Select by Parameter** | Choose any parameter and a value to select every matching element in the model — no filter setup required. |
+| **Filter by Parameter** | Select elements, pick one of their parameters, and create a view filter rule instantly — skips the multi-step Visibility/Graphics workflow. |
+| **Select by Family** | Pick any placed element to select everything in the model that shares the same family. |
 
-### CAD and links
-
-| Tool | Description |
-|---|---|
-| CAD Layer Manager | Manage CAD-layer and imported-CAD-group visibility, search layers, build reusable rule expressions, and stage graphic overrides before applying them to the active view or its template. |
-| Hide CAD Layer | Click a line, text object, or point in an imported CAD drawing to hide its entire layer from the current view. |
-| Tag CAD Layers — WIP | Place text-note tags for visible CAD layers in the active view, helping with coordination and layer auditing. |
-| Batch Link Files | Link multiple DWG and RVT files from a folder with workset and positioning options. |
-
-### Productivity and geometry
+### Geometry
 
 | Tool | Description |
 |---|---|
-| Section / Scope Box | Toggle section-box visibility in active 3D views and scope-box visibility in supported views, including views with templates applied. |
-| Free Dims | Place horizontal, vertical, or aligned dimensions between picked points, independently of existing elements. |
-| Find & Replace — WIP | Find and replace text, tags, view names, and writable title-block or sheet parameters with an editable preview before applying changes. |
-| Move Geo | Move selected elements by precise X/Y/Z offsets in millimetres, with a preview before committing. |
-| Unhide All | Unhide every individually hidden element in the active view. |
-| Detail Lines Length — Unfinished | Measure total detail-line length in the active view, grouped by line style. Hidden by default. |
-| Flip Each Element — WIP | Flip selected family instances or walls around their hand axis. Hidden by default. |
-| Allow / Disallow Join | Enable or disable wall-end joins across selected elements. |
-| Join Geometry | Join selected elements, or remove joins from a picked element, without repeated manual operations. |
+| **Move Geo** | Move selected elements by precise X/Y/Z offsets in millimetres, with a live preview before committing. |
+| **Unhide All** | Unhides every individually hidden element in the active view in one click. |
+| **Detail Lines Length** | Measures the total length of detail lines in the active view, grouped by line style. Line style and wall height are selectable. |
+| **Flip Each Element** | Flips every selected family instance or wall about its hand axis. |
+| **Allow / Disallow Join** | Enable or disable wall end joins on all selected walls at once — no need to click each handle individually. |
+| **Join All / Unjoin All** | Join every selected element to every other, or strip all joins from a picked element in one operation. |
 
-### Views and templates
+### Productivity
 
 | Tool | Description |
 |---|---|
-| V/G Manager — WIP | Batch-manage visibility and graphic overrides across view templates from one grid. Hidden by default. |
-| Copy V/G Settings — Unfinished | Copy visibility and graphic overrides from the active view to target views. Hidden by default. |
-| Perp Sections — Unfinished | Create perpendicular section views along a selected line or wall. Hidden by default. |
-| View Template Diff — WIP | Compare view templates setting by setting and selectively sync differences. Hidden by default. |
-| View Template Snapshot — Unfinished | Export view-template settings to JSON and import them into a view or template, with a comparison preview before import. Hidden by default. |
+| **Section Box** | Toggle section box visibility in the active 3D view, even when a view template is applied. |
+| **Scope Boxes** | Toggle scope box visibility in the active view, even when a view template is applied. |
+| **Free Dims** | Place horizontal, vertical, or aligned dimensions between any two picked points, independent of existing elements. |
+| **Find & Replace** | Find and replace text across text notes, tags, and views with a live preview grid before applying changes. Remembers the last-used scope, filters, and options across sessions. |
+| **Hide CAD Layer** | Click any line on an imported CAD drawing to hide the entire layer from the view — no layer name lookup needed. |
+| **Tag CAD Layers** | Place text note tags on each visible CAD layer in the active view, labelled by layer name. Useful for CAD coordination and layer auditing. |
 
-### Sheets and annotation
+### View Settings
 
 | Tool | Description |
 |---|---|
-| Level Extents | Align level datum extents to the crop region of the active section or elevation view. |
-| Match Viewports Vertically | Align viewport crop regions on a sheet to a reference viewport without moving the viewports themselves. |
-| Match Sheet Positions | Copy viewport positions and view assignments from one sheet to another, with predictable mapped-viewport order. |
-| Slope Lines | Draw hachure slope lines between top and bottom boundaries, sized and spaced for the active view scale. |
+| **V/G Manager** | Batch manage visibility and graphics overrides across view templates from a single grid. |
+| **Copy V/G Settings** | Copy visibility/graphics overrides from the active view to one or more target views. |
+| **Perp Sections** | Create perpendicular section views along a selected line or wall. |
 
-## Usage statistics and privacy
+### Sheet Tools
 
-Usage reporting helps identify which tools are useful and when a release introduces failures. It is designed to collect only the minimum information needed for that purpose.
+| Tool | Description |
+|---|---|
+| **Level Extents** | Snaps level datum extents to match the crop region of the active section or elevation view, keeping levels tidy without manual dragging. |
+| **Match Viewports Vertically** | Align the crop regions of multiple viewports on a sheet to a reference viewport without repositioning them. Optionally aligns to a reference element picked in the model or in a linked file. |
+| **Match Sheet Positions** | Copy viewport positions and view assignments from a source sheet to a target sheet. |
 
-You can view exactly what would be sent in Preferences → Advanced → Show what is sent, and disable reporting at any time in Preferences → Advanced → Usage Stats.
+### Annotate
 
-### What is sent
+| Tool | Description |
+|---|---|
+| **Slope Lines** | Draw hachure slope lines between a top boundary and a bottom boundary, sized and spaced to the active view scale. |
 
-At most once per day, SDX Tools may send a small batched report containing:
+---
 
-- Tool IDs and success, failure, or cancellation counts
-- A random locally generated install ID
-- SDX Tools version
-- Revit version and build
-- Runtime target
-- Update channel
-- Usage date
+## Getting started
 
-### What is never sent
+**Requirements:** Revit 2024, 2025, 2026, or 2027
 
-SDX Tools does not send:
+**Build (whole solution):** requires the .NET 10 SDK (builds all four targets in one pass):
 
-- User, machine, or domain names
-- File paths
-- Project, family, or model names
-- Model contents
-- Free text or user-entered values
+```powershell
+dotnet build -c Debug "SDX Tools.slnx"
+```
 
-The install ID is a random GUID created on your machine. It is not derived from your username, hardware, machine name, or domain. Removing %AppData%\SDX\ resets it.
+Post-build copies each DLL to `deploy/{version}/SDX.dll` automatically.
 
-If sending fails, the add-in continues normally. Telemetry never blocks or interrupts Revit workflows.
+**Build (individual target):**
 
-<details>
-<summary><strong>IT / managed-device opt-out</strong></summary>
+```powershell
+dotnet build -c Debug "Revit 2025\Revit 2025.csproj"
+dotnet build -c Debug "Revit 2026\Revit 2026.csproj"
+```
 
-To disable telemetry for every user on a machine, create this registry value:
+Visual Studio 2022 can open `SDX Tools.slnx` and build the 2024/2025/2026 targets. The Revit 2027 project (net10.0-windows) requires the .NET 10 CLI — VS 2022 tops out at .NET 9.
+
+**Deploy:** Close Revit, then run:
+
+```powershell
+.\Deploy-LocalPrerelease.ps1
+```
+
+Copies `deploy/2024/`, `deploy/2025/`, `deploy/2026/`, and `deploy/2027/` to `%AppData%\Autodesk\Revit\Addins\{version}\`.
+
+**Developing:** Load `bin\Debug\net8.0-windows\SDX.Debug.dll` directly via Revit's Addin Manager — this path is never locked by a running Revit instance. Debug builds have a distinct assembly identity, so they can coexist with the deployed `SDX.dll` that owns the SDX ribbon.
+
+---
+
+## Usage statistics
+
+Usage reporting is optional and can be turned off at any time in Preferences.
+
+I built SDX Tools for myself and gradually started sharing it with colleagues. At some point I realised I had no idea which tools anyone actually used — I was adding features based on gut feel and fixing bugs only when someone mentioned them in passing. Usage statistics fix both of those problems. When I can see that Level Extents runs dozens of times a day and Template Activity Checker has never been touched, I know where to spend time. When I can see a tool failing at twice its usual rate after a release, I know something broke without waiting for a report.
+
+None of this requires knowing who you are or anything about your project. The data is a plain count — tool X ran Y times with Z failures — plus the minimum context needed to make that count meaningful.
+
+**What is sent** — once per day at most, in a single batched request when Revit starts:
+
+| Field | Example | Why |
+|-------|---------|-----|
+| Tool id and outcome counts | `LevelExtents: 12 succeeded, 1 failed, 3 cancelled` | Which tools are used, and which ones break |
+| Install id | a random GUID, generated on your machine | Distinguishes installs so "20 people used this" is separable from "one person used it 20 times" |
+| SDX version | `0.4.0-preview` | Correlates failures with releases |
+| Revit version | `2026` | Shows which Revit versions are still worth supporting |
+| Revit build | `20260903_1515(x64)` | Distinguishes updated vs not-yet-updated installs within the same Revit major version |
+| Runtime target | `net8.0-windows`, `net10.0-windows`, or `net48` | Shows which runtime path each install actually executes |
+| Update channel | `Stable` or `Preview` | Shows whether preview builds are less stable |
+| Date | `2026-08-13` | The day the tools were used |
+
+**What is never sent:** user names, machine names, domain names, file paths, project or family names, model contents, or any free text. The install id is a random GUID created locally — it is not derived from your username, machine, domain or hardware, and wiping `%AppData%\SDX\` resets it.
+
+It is sent to `https://telemetry.draak.org/v1/usage`. If that request fails the counts stay on your machine and the addin carries on as normal — telemetry never blocks, delays or interrupts anything.
+
+**Seeing exactly what is sent:** Preferences → Advanced → **Show what is sent** prints the precise payload that would go out on the next start. It is generated by the same code that does the sending, so it cannot drift from reality.
+
+**Turning it on or off (per user):** Preferences → Advanced → **Usage Stats**. Switching it off also discards anything already collected but not yet sent.
+
+**Turning it off (whole machine, for IT):** set a `DisableTelemetry` DWORD to `1` under `HKLM\Software\SDX\Tools`. This overrides the per-user toggle, nothing is collected or sent, and the toggle appears disabled with an explanation. Deploy it with:
 
 ```powershell
 reg add "HKLM\Software\SDX\Tools" /v DisableTelemetry /t REG_DWORD /d 1 /f
 ```
 
-This overrides the per-user setting, prevents collection and sending, and disables the in-app toggle with an explanation.
+The collector is a Cloudflare Worker; its source and the queries run against the data are in [`telemetry/`](telemetry/).
 
-</details>
+---
 
-## Feedback
+## Project structure
 
-Use SDX → Send Feedback inside Revit to report bugs, request features, or share suggestions.
+```
+SDX/            # Shared project — all tool source
+  Shared/       # Cross-tool infrastructure
+    Core/       # Utilities, settings, toast, debug logging
+    Dialogs/    # Shared WPF dialogs
+    Styles/     # Shared WPF resource dictionary
+    Controls/   # Shared WPF controls
+  Ribbon/       # IExternalApplication entry point
+  {ToolName}/   # One folder per tool
+Revit 2024/     # Target project for R2024 (net48)
+Revit 2025/     # Target project for R2025 (net8.0-windows)
+Revit 2026/     # Target project for R2026 (net8.0-windows)
+Revit 2027/     # Target project for R2027 (net10.0-windows)
+deploy/         # Staging folder for Deploy-LocalPrerelease.ps1
+```
 
-For release downloads and release notes, visit the SDX Tools releases page.
+---
+
+## Release process
+
+The public distribution repo (`Stibbz/SDX-Tools`) is updated automatically by `.github/workflows/release.yml` when a GitHub Release is published here.
+
+**To publish a release:**
+
+1. Bump `<Version>` in `Directory.Build.props` (single source of truth — stamped into `SDX.dll` and `version.json`).
+2. Update `CHANGELOG.md` with user-facing changes.
+3. Build all four targets and confirm 0 errors.
+4. Publish a GitHub Release on this repo. The workflow fires and:
+   - Builds all four Revit targets (2024, 2025, 2026, 2027)
+   - Copies the built folders to the public repo
+   - Generates and pushes `version.json` (including the `SDX-Updater.ps1` SHA-256) and `SDX-Updater.ps1`
+   - Attaches a `.zip` to the GitHub Release for manual downloads
+
+**Versioning (`MAJOR.MINOR.PATCH`):**
+
+| Part | Bump when |
+|------|-----------|
+| MAJOR | Breaking change — tool removed, incompatible prefs, behaviour users must relearn |
+| MINOR | New feature, backward-compatible |
+| PATCH | Bug fix or tweak only |
+
+While MAJOR is `0`: MINOR absorbs features and breaking changes; PATCH is fixes only.
+
+Rules: always bump before releasing; never go backwards; use three parts only (`0.2.0`).
+
+**Preview releases:** append `-preview.N` to the version string. Set the GitHub Release as a prerelease. Only users on the Preview update channel receive the update prompt.
+
+**To test without publishing a release:** go to Actions → "Release SDX Tools" → Run workflow.
+
+---
+
+## Updater internals
+
+`SDX/Update/UpdateService.cs` reads `version.json` from the public repo at startup (rate-limited to once per 6 hours). If a newer version is found, it prompts the user and sets a deferred flag. On Revit shutdown, it first tries `SDX-Updater.exe` (checksum-verified via `updaterExeSha256`) and falls back to `SDX-Updater.ps1` (checksum-verified via `updaterSha256`) when needed.
+
+Fallback script launch command:
+
+```
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File SDX-Updater.ps1 `
+    -RevitPid <pid> -FilesBaseUrl <url> -RevitAddinsFolder <%AppData%\Autodesk\Revit\Addins>
+```
+
+`SDX-Updater.ps1` waits for Revit to exit, re-checks the installed version, waits for `SDX.dll` to unlock, then downloads the flat per-Revit-version release assets (`SDX-2025.dll`, `SDX-2025.addin`, ...) from `$FilesBaseUrl` into each installed version folder. Log: `%AppData%\SDX\updater.log`.
+
+The script runs with `-ExecutionPolicy Bypass`, so it is hashed before it runs. A mismatch **or a manifest with no `updaterSha256`** aborts the update and logs an error — refusing to update is always safer than running an unverified script. The release workflow hashes the exact `SDX-Updater.ps1` it publishes, so this needs no manual step.
+
+**`version.json` fields** (deserialized by `UpdateManifest.cs`):
+
+| Key | Meaning |
+|-----|---------|
+| `version` | Latest published version |
+| `filesBaseUrl` | Release download base — `SDX-Updater.ps1` appends `/SDX-{revitVersion}.dll` etc. |
+| `updaterUrl` | Direct URL to `SDX-Updater.ps1` |
+| `updaterSha256` | SHA-256 of `SDX-Updater.ps1`, verified before it is executed. Required |
+| `updaterExeUrl` | Direct URL to `SDX-Updater.exe` |
+| `updaterExeSha256` | SHA-256 of `SDX-Updater.exe`, verified before it is executed |
+| `downloadPageUrl` | Fallback landing page if updater launch fails |
+| `notes` | Release notes shown in the Revit toast |
+
+**Update channels:**
+- In Revit: Preferences -> Advanced -> **Update channel**.
+- Without Revit: run `SDX-Updater.exe` and choose channel in the installer dialog.
+- Without Revit (transparent script path): run `SDX-Updater.ps1` and choose channel in the prompts, or pass `-Channel Stable|Preview`.
+
+`Stable` (default) only prompts for full releases. `Preview` also prompts for `-preview.N` builds. Switching from Preview back to Stable will offer a downgrade if the current installed version is a preview.
+
+**One-time GitHub setup:** Create `Stibbz/SDX-Tools` with GitHub Pages on `main`/root. Generate a PAT with `repo` scope and add it as an Actions secret named `PAGES_DEPLOY_PAT` on this repo.
