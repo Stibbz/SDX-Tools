@@ -67,6 +67,18 @@ function Write-Log {
     Write-Host $logLine
 }
 
+function Clear-PendingUpdate {
+    try {
+        $pendingUpdatePath = Join-Path $env:APPDATA "SDX\PendingUpdate.json"
+        if (Test-Path -LiteralPath $pendingUpdatePath) {
+            Remove-Item -LiteralPath $pendingUpdatePath -Force -ErrorAction Stop
+            Write-Log "Removed pending update marker: $pendingUpdatePath"
+        }
+    } catch {
+        Write-Log "Could not remove pending update marker (ignored): $($_.Exception.Message)"
+    }
+}
+
 function Assert-MainParameters {
     if ($RevitPid -le 0) {
         throw "Missing or invalid parameter: -RevitPid"
@@ -78,10 +90,6 @@ function Assert-MainParameters {
 
     if ([string]::IsNullOrWhiteSpace($RevitAddinsFolder)) {
         throw "Missing required parameter: -RevitAddinsFolder"
-    }
-
-    if ([string]::IsNullOrWhiteSpace($FilesManifestPath)) {
-        throw "Missing required parameter: -FilesManifestPath"
     }
 
     if ([string]::IsNullOrWhiteSpace($NewVersion)) {
@@ -155,6 +163,10 @@ function Complete-Run {
     $color = if ($Success) { "Green" } else { "Red" }
     Write-Host ""
     Write-Host $Message -ForegroundColor $color
+    if (-not $Success) {
+        $Message = "The SDX Tools update did not complete. Please try again or install manually from https://github.com/Stibbz/SDX-Tools/releases/latest.`n`n$Message"
+    }
+    Show-MessageBox -Message $Message -Title "SDX Tools Updater" -Icon $(if ($Success) { "Information" } else { "Error" })
     Wait-ForExitConfirmation
     exit $ExitCode
 }
@@ -477,6 +489,73 @@ function Get-FileHashesFromManifest {
     return $hashes
 }
 
+function Get-PublishedFileHashes {
+    param([string] $TargetVersion)
+
+    Write-Log "No -FilesManifestPath supplied; reading published checksums."
+    $normalizedTarget = $TargetVersion.Trim().TrimStart('v', 'V')
+    foreach ($url in @(
+        "https://raw.githubusercontent.com/Stibbz/SDX-Tools/main/version.json",
+        "https://raw.githubusercontent.com/Stibbz/SDX-Tools/main/version-preview.json"
+    )) {
+        try {
+            $manifest = Invoke-RestMethod -Uri $url -TimeoutSec 15 -UserAgent "SDX-Updater"
+            $manifestVersion = ([string]$manifest.version).Trim().TrimStart('v', 'V')
+            if ($manifestVersion -ne $normalizedTarget) {
+                Write-Log "Skipping manifest at ${url}: version does not match $TargetVersion."
+                continue
+            }
+
+            $hashes = Get-FileHashesFromManifest -Manifest $manifest
+            Write-Log "Using checksums from published manifest $url for version $TargetVersion."
+            return $hashes
+        }
+        catch {
+            Write-Log "Could not use manifest at ${url}: $($_.Exception.Message)"
+        }
+    }
+
+    $tag = "v$normalizedTarget"
+    $releaseUrl = "https://api.github.com/repos/Stibbz/SDX-Tools/releases/tags/$([Uri]::EscapeDataString($tag))"
+    try {
+        $release = Invoke-RestMethod -Uri $releaseUrl -TimeoutSec 15 -UserAgent "SDX-Updater"
+        if ([string]$release.tag_name -ine $tag) {
+            throw "Release tag did not match the requested version."
+        }
+
+        $hashes = @{}
+        foreach ($line in ([string]$release.body -split "`n")) {
+            $fileMatch = [regex]::Match($line, '\bSDX-\d{4}\.(?:dll|addin)\b', [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+            $hashMatch = [regex]::Match($line, '(?<![a-fA-F0-9])[a-fA-F0-9]{64}(?![a-fA-F0-9])')
+            if ($fileMatch.Success -and $hashMatch.Success) {
+                $hashes[$fileMatch.Value] = $hashMatch.Value
+            }
+        }
+
+        foreach ($asset in $release.assets) {
+            $assetName = [string]$asset.name
+            $assetDigest = [string]$asset.digest
+            if ($assetName -imatch '^SDX-\d{4}\.(?:dll|addin)$' -and
+                $assetDigest -imatch '^sha256:[a-fA-F0-9]{64}$') {
+                $hashes[$assetName] = $assetDigest.Substring('sha256:'.Length)
+            }
+        }
+
+        $hashes = Get-FileHashesFromManifest -Manifest ([pscustomobject]@{ filesManifest = [pscustomobject]$hashes })
+        $installedVersions = @($SupportedRevitVersions | Where-Object {
+            Test-Path (Join-Path $RevitAddinsFolder $_)
+        })
+        Assert-RequiredFileHashes -FileHashes $hashes -RevitVersions $installedVersions
+        Write-Log "Using checksums from GitHub release $releaseUrl for version $TargetVersion."
+        return $hashes
+    }
+    catch {
+        Write-Log "Could not use release checksums at ${releaseUrl}: $($_.Exception.Message)"
+    }
+
+    throw "No published manifest provides verified file hashes for version $TargetVersion. Refusing to replace unverified files."
+}
+
 function Get-FileHashesFromPath {
     param([string] $Path)
 
@@ -649,7 +728,7 @@ function Invoke-StandaloneInstall {
     }
 }
 
-# Shows a basic console message for completion/warning/error messages.
+# Shows completion/warning/error messages even when launched without a console.
 function Show-MessageBox {
     param(
         [string] $Message,
@@ -657,20 +736,18 @@ function Show-MessageBox {
         [string] $Icon = "Information"
     )
 
-    $border = "=" * 70
-    Write-Host ""
-    Write-Host $border
-    Write-Host "SDX Updater - $Title"
-    Write-Host "Status: $Icon"
-    Write-Host ""
-    Write-Host $Message
-    Write-Host $border
-    Write-Host ""
+    Add-Type -AssemblyName System.Windows.Forms
+    [void][System.Windows.Forms.MessageBox]::Show(
+        $Message,
+        $Title,
+        [System.Windows.Forms.MessageBoxButtons]::OK,
+        [System.Windows.Forms.MessageBoxIcon]$Icon
+    )
 }
 
 # Polls until Revit's process disappears from the process list.
 function Wait-ForRevitToClose {
-    param([int] $ProcessId, [int] $TimeoutSeconds = 120)
+    param([int] $ProcessId, [int] $TimeoutSeconds = 600)
     $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
     while ((Get-Date) -lt $deadline) {
         $revitProcess = Get-Process -Id $ProcessId -ErrorAction SilentlyContinue
@@ -855,7 +932,7 @@ function Set-RoundedControlRegion {
 # Console-based interactive wait for the scheduling Revit process.
 # Press C to cancel the update or F to force-close Revit.
 function Wait-ForRevitToCloseInteractive {
-    param([int] $ProcessId, [int] $TimeoutSeconds = 120)
+    param([int] $ProcessId, [int] $TimeoutSeconds = 600)
 
     $alreadyClosed = Get-Process -Id $ProcessId -ErrorAction SilentlyContinue
     if ($null -eq $alreadyClosed) {
@@ -977,15 +1054,71 @@ function Show-WaitWindowPreview {
     }
 }
 
-# Polls until no Revit process remains on the machine, then returns.
-# Intended to run after the scheduling Revit has already closed; waits silently
-# for any other open Revit sessions to close before touching shared files.
+# Waits visibly for other Revit sessions before touching shared files.
 function Wait-ForAllRevitToClose {
+    param([int] $TimeoutSeconds = 600)
+
     Write-Log "Waiting for all remaining Revit instances to close..."
-    while ($true) {
-        $remaining = Get-Process -Name Revit -ErrorAction SilentlyContinue
-        if ($null -eq $remaining -or @($remaining).Count -eq 0) { return }
-        Start-Sleep -Seconds 2
+    if (@(Get-Process -Name Revit -ErrorAction SilentlyContinue).Count -eq 0) { return }
+
+    Add-Type -AssemblyName System.Windows.Forms
+    $form = New-Object System.Windows.Forms.Form
+    $timer = New-Object System.Windows.Forms.Timer
+    $state = @{ Status = 'Cancelled'; ErrorMessage = $null }
+    $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
+    try {
+        $form.Text = "SDX Tools Updater"
+        $form.TopMost = $true
+        $form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
+        $form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedDialog
+        $form.MaximizeBox = $false
+        $form.MinimizeBox = $false
+        $form.ClientSize = New-Object System.Drawing.Size(440, 115)
+
+        $label = New-Object System.Windows.Forms.Label
+        $label.Text = "Waiting for other Revit windows to close..."
+        $label.AutoSize = $true
+        $label.Location = New-Object System.Drawing.Point(15, 20)
+        $form.Controls.Add($label)
+
+        $cancel = New-Object System.Windows.Forms.Button
+        $cancel.Text = "Cancel"
+        $cancel.Location = New-Object System.Drawing.Point(180, 65)
+        $cancel.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
+        $form.CancelButton = $cancel
+        $form.Controls.Add($cancel)
+
+        $timer.Interval = 2000
+        $timer.Add_Tick({
+            try {
+                if (@(Get-Process -Name Revit -ErrorAction SilentlyContinue).Count -eq 0) {
+                    $state.Status = 'Closed'
+                    $form.Close()
+                } elseif ([DateTime]::UtcNow -ge $deadline) {
+                    $state.Status = 'TimedOut'
+                    $form.Close()
+                }
+            }
+            catch {
+                $state.Status = 'Error'
+                $state.ErrorMessage = $_.Exception.Message
+                $form.Close()
+            }
+        }.GetNewClosure())
+        $timer.Start()
+        [void]$form.ShowDialog()
+    }
+    finally {
+        $timer.Stop()
+        $timer.Dispose()
+        $form.Dispose()
+    }
+
+    switch ($state.Status) {
+        'Closed' { Write-Log "All Revit instances have closed."; return }
+        'TimedOut' { throw "Other Revit windows did not close within 10 minutes. Please close them before trying again." }
+        'Error' { throw "Could not wait for other Revit windows to close: $($state.ErrorMessage)" }
+        default { throw "The update was cancelled while waiting for other Revit windows to close." }
     }
 }
 
@@ -1063,7 +1196,11 @@ try {
         }
 
         Assert-MainParameters
-        $fileHashes = Get-FileHashesFromPath -Path $FilesManifestPath
+        $fileHashes = if ([string]::IsNullOrWhiteSpace($FilesManifestPath)) {
+            Get-PublishedFileHashes -TargetVersion $NewVersion
+        } else {
+            Get-FileHashesFromPath -Path $FilesManifestPath
+        }
 
         Write-Log "SDX Tools updater started."
         Write-Log "Revit process ID : $RevitPid"
@@ -1079,16 +1216,16 @@ try {
         if ($waitResult.Cancelled) {
             Write-Log "Update cancelled by user while waiting for Revit to close."
             Show-MessageBox `
-                -Message "SDX Tools update was cancelled while waiting for Revit to fully close.`n`nYou can start the update again from Preferences." `
+                -Message "The SDX Tools update did not complete because it was cancelled while waiting for Revit to close.`n`nPlease try again or install manually from https://github.com/Stibbz/SDX-Tools/releases/latest." `
                 -Title   "SDX Tools Update Aborted" `
                 -Icon    "Warning"
             exit 1
         }
 
         if ($waitResult.TimedOut) {
-            Write-Log "ERROR: Revit (PID $RevitPid) did not close within 2 minutes. Aborting."
+            Write-Log "ERROR: Revit (PID $RevitPid) did not close within 10 minutes. Aborting."
             Show-MessageBox `
-                -Message "SDX Tools update aborted: Revit did not close within 2 minutes.`n`nCheck $LogFile for details." `
+                -Message "The SDX Tools update did not complete because Revit did not close within 10 minutes.`n`nPlease close Revit and try again, or install manually from https://github.com/Stibbz/SDX-Tools/releases/latest." `
                 -Title   "SDX Tools Update Aborted" `
                 -Icon    "Warning"
             exit 1
@@ -1114,6 +1251,8 @@ try {
 
                 if ($installedNorm -eq $targetNorm) {
                     Write-Log "Already on version $NewVersion. Nothing to update."
+                    Clear-PendingUpdate
+                    Show-MessageBox -Message "SDX Tools $NewVersion is already installed. You can reopen Revit." -Title "SDX Tools Up to Date"
                     exit 0
                 }
 
@@ -1134,8 +1273,7 @@ try {
         }
 
         if ($installedVersionFolders.Count -eq 0) {
-            Write-Log "No SDX Tools installation folders found under $RevitAddinsFolder. Nothing to update."
-            exit 0
+            throw "No SDX Tools installation folders were found under $RevitAddinsFolder."
         }
 
         Assert-RequiredFileHashes -FileHashes $fileHashes -RevitVersions $installedVersionFolders
@@ -1153,7 +1291,7 @@ try {
             if (-not $filesAreUnlocked) {
                 Write-Log "ERROR: File(s) are still locked after 60 seconds. Aborting."
                 Show-MessageBox `
-                    -Message "SDX Tools update to $NewVersion failed: files are still locked.`n`nCheck $LogFile for details." `
+                    -Message "The SDX Tools update did not complete because its files are still in use.`n`nPlease close Revit and try again, or install manually from https://github.com/Stibbz/SDX-Tools/releases/latest." `
                     -Title   "SDX Tools Update Failed" `
                     -Icon    "Error"
                 exit 1
@@ -1192,6 +1330,7 @@ try {
         $downloadClient.Dispose()
 
         if ($anythingUpdated) {
+            Clear-PendingUpdate
             Write-Log "Update to $NewVersion complete. You can now reopen Revit."
             Show-MessageBox `
                 -Message "SDX Tools has been updated to $NewVersion.`n`nYou can now reopen Revit." `
@@ -1211,7 +1350,7 @@ try {
         }
 
         Show-MessageBox `
-            -Message "SDX Tools update to $NewVersion failed.`n`nError: $($_.Exception.Message)`n`nCheck $LogFile for details." `
+            -Message "The SDX Tools update to $NewVersion did not complete.`n`nPlease try again or install manually from https://github.com/Stibbz/SDX-Tools/releases/latest.`n`nDetails: $($_.Exception.Message)`nLog: $LogFile" `
             -Title   "SDX Tools Update Failed" `
             -Icon    "Error"
         exit 1
@@ -1225,5 +1364,6 @@ try {
 }
 catch {
     # Mutex acquisition itself failed -- should not normally happen.
+    Show-MessageBox -Message "The SDX Tools update did not complete.`n`nPlease try again or install manually from https://github.com/Stibbz/SDX-Tools/releases/latest.`n`nDetails: $($_.Exception.Message)" -Title "SDX Tools Update Failed" -Icon "Error"
     exit 1
 }
