@@ -1,22 +1,22 @@
 {
-  "version": "0.4.6",
-  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.6",
+  "version": "0.4.7",
+  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.7",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/SDX-Updater.ps1",
-  "updaterSha256": "c2badcfc36aaf4f19663e003dd8129f67ced24d4e379733745fee45b6ceec6ea",
-  "updaterExeUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.6/SDX-Updater.exe",
-  "updaterExeSha256": "1e6d074f915a3d9a42aa04ab24d23808806caed0a9177c8b04ba494835984a25",
+  "updaterSha256": "2ab3b369d4fb8a0a3e212c85dbf81345a8611b83a9f40bbad652313e173448f7",
+  "updaterExeUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.7/SDX-Updater.exe",
+  "updaterExeSha256": "5cf24207cf1e3dd95729210f1ca55eb407b880eaece60f249a781021f71ea31d",
   "assetSha256": {
-    "SDX-2024.dll": "c0afdb3b1c9b05b7481e39d974220d952be175638c734e93d7edea6bacee12e0",
+    "SDX-2024.dll": "5588a628072bdcd2484231ed2a1a249429422be9fa98a9a133a4bf507bfeb937",
     "SDX-2024.addin": "d74e89b9c8ed9a2ef4056b1a967e9c8434cf6b8645c7173995ea6500abd708e1",
-    "SDX-2025.dll": "2aa35a9ef169d1ff4b13ca988944758183c63d317b697c8427b36daa5751d47d",
+    "SDX-2025.dll": "52c1e56ceff7eb905dea676d583a19aac2c619cf28aedd358627011b9d1db5fc",
     "SDX-2025.addin": "a6907905b2ea97f45f0a0f4f43ef10fd3809cb0480c04df07a8f8061a8002840",
-    "SDX-2026.dll": "753db9f3f0388da44b92b5b30f00e64b87a6bfdd4a1d132894e9bb08826cbbf5",
+    "SDX-2026.dll": "55ef71c21316d897820995680d5f6913de5377de8609e4bdd1facf18c4ba2c7f",
     "SDX-2026.addin": "1d750c5966faed3cb096896a85c24c44106f233e28ebe0406daf3bb47aa2ff39",
-    "SDX-2027.dll": "f083e987bd19f11c4ecdd4a775002fd3252fd1daeccf8afb78745ec2695be6f2",
+    "SDX-2027.dll": "606a3fc08c776869f9b80bd08b1647a901e0de7353e7b09c5c76f25c71e4f2ef",
     "SDX-2027.addin": "89c1eda1856bef60d55b52f02538f1e888ee906ddae465ac47671296b21b30b5"
   },
-  "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.6/SDX-Tools-0.4.6.zip",
-  "releaseZipSha256": "daff6fa8cbe7be680c4f8cd17d2d5e90b021530a4418c5c2a475c018a09f8675",
+  "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.7/SDX-Tools-0.4.7.zip",
+  "releaseZipSha256": "3465348e8ddfe53dcc7d828ec704f481fa69a296b5fa32fedbe38e606f37eb24",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
-  "notes": "## 0.4.6\r\n\r\n- CAD Layer Manager now has an info button in the header to show or hide the tool description; your choice is remembered per tool. Other tools will adopt the same button\r\n- CAD Layer Manager can now save and reuse sets of layer expressions\r\n- Commands now give toast feedback when they finish\r\n- The release notes window now expands to fit longer notes\r\n- The updater now verifies the SHA-256 hash of every downloaded Revit add-in file before installing it\n- Release ZIP files and individual release assets now publish SHA-256 checksums, with a post-release verifier confirming the published downloads\n- A documented manual installation and verification route is now available for corporate environments or installations where running the EXE is not permitted"
+  "notes": "## 0.4.7\r\n\r\n### Updates\r\n\r\n- Fixed updates stalling for users on 0.4.4 and 0.4.5: the update is now installed and checksum-verified, and the daily update prompt no longer repeats\r\n- The update window now appears as soon as Revit starts closing and explains that it is waiting for Revit to exit; the update is prepared in the background, and closing Revit waits up to 25 seconds for it\r\n- Cancelling a Revit close or a scheduled update no longer loses or wrongly keeps a pending update\r\n- Update failures now show plain-language messages, and a blocked or failed update offers the manual download page\r\n- **What's Changed** is now marked as read as soon as it opens, so it no longer reappears on every start\r\n\r\n### Phase Parameter Sync\r\n\r\n- Phase sync is more reliable in the background and now skips group instances whose members differ, reporting the skipped groups (and the views they appear in) in a dialog instead of changing them\r\n"
 }
