@@ -1,22 +1,22 @@
 {
-  "version": "0.4.7",
-  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.7",
+  "version": "0.4.8-preview.1",
+  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.1",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/SDX-Updater.ps1",
   "updaterSha256": "2ab3b369d4fb8a0a3e212c85dbf81345a8611b83a9f40bbad652313e173448f7",
-  "updaterExeUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.7/SDX-Updater.exe",
-  "updaterExeSha256": "5cf24207cf1e3dd95729210f1ca55eb407b880eaece60f249a781021f71ea31d",
+  "updaterExeUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.1/SDX-Updater.exe",
+  "updaterExeSha256": "438b29a19426d8c9a0116057177a147cd633a5eebeacec9206282b8ae394bcd1",
   "assetSha256": {
-    "SDX-2024.dll": "5588a628072bdcd2484231ed2a1a249429422be9fa98a9a133a4bf507bfeb937",
-    "SDX-2024.addin": "d74e89b9c8ed9a2ef4056b1a967e9c8434cf6b8645c7173995ea6500abd708e1",
-    "SDX-2025.dll": "52c1e56ceff7eb905dea676d583a19aac2c619cf28aedd358627011b9d1db5fc",
-    "SDX-2025.addin": "a6907905b2ea97f45f0a0f4f43ef10fd3809cb0480c04df07a8f8061a8002840",
-    "SDX-2026.dll": "55ef71c21316d897820995680d5f6913de5377de8609e4bdd1facf18c4ba2c7f",
-    "SDX-2026.addin": "1d750c5966faed3cb096896a85c24c44106f233e28ebe0406daf3bb47aa2ff39",
-    "SDX-2027.dll": "606a3fc08c776869f9b80bd08b1647a901e0de7353e7b09c5c76f25c71e4f2ef",
-    "SDX-2027.addin": "89c1eda1856bef60d55b52f02538f1e888ee906ddae465ac47671296b21b30b5"
+    "SDX-2024.dll": "6808fbc848be9a283a43c8829bbce40d15ab5dc27526fba51f390ae6e4b166d6",
+    "SDX-2024.addin": "d233ca656172a884827818f5322e0c924d46fd8b92605f6ea94ed078d9af9b20",
+    "SDX-2025.dll": "ccbef53462b6491a98bee9c2b26e543830248092077119e87fd6f028b391b662",
+    "SDX-2025.addin": "3d0b5ddf2051ae63897f6eb73d85650b792632aa63703c66d0d41364c581048d",
+    "SDX-2026.dll": "b2ec6a4e1436f66643c0c5332fc58ad7001b465544e353968b2644e45975fb9a",
+    "SDX-2026.addin": "c42706dcdd1e8b2890275b3a7b2737c635b5572cbf282cc69cfe685b8c8c200d",
+    "SDX-2027.dll": "d30ddcd77a068e594ce62f2c5fea32c5e0c3ca4130ea51a49a9a2289c4094ea1",
+    "SDX-2027.addin": "fae12f7ef01340e7d3f66376a33c60e66bccd05bd8c91242d9b753d3769ed359"
   },
-  "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.7/SDX-Tools-0.4.7.zip",
-  "releaseZipSha256": "3465348e8ddfe53dcc7d828ec704f481fa69a296b5fa32fedbe38e606f37eb24",
+  "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.1/SDX-Tools-0.4.8-preview.1.zip",
+  "releaseZipSha256": "3aff87d8e28ffb0e5919056719755b384994cf63d1b105a4a61e856cee4a309b",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
-  "notes": "## 0.4.7\r\n\r\n### Updates\r\n\r\n- Fixed updates stalling for users on 0.4.4 and 0.4.5: the update is now installed and checksum-verified, and the daily update prompt no longer repeats\r\n- The update window now appears as soon as Revit starts closing and explains that it is waiting for Revit to exit; the update is prepared in the background, and closing Revit waits up to 25 seconds for it\r\n- Cancelling a Revit close or a scheduled update no longer loses or wrongly keeps a pending update\r\n- Update failures now show plain-language messages, and a blocked or failed update offers the manual download page\r\n- **What's Changed** is now marked as read as soon as it opens, so it no longer reappears on every start\r\n\r\n### Phase Parameter Sync\r\n\r\n- Phase sync is more reliable in the background and now skips group instances whose members differ, reporting the skipped groups (and the views they appear in) in a dialog instead of changing them\r\n"
+  "notes": "Preview: View Template Snapshot parent selection now cascades to all layers; Model Health rework."
 }
