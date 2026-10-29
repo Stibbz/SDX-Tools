@@ -145,7 +145,7 @@ Unfinished tools are hidden by default and should be enabled from Preferences on
 | Tool | Description |
 |---|---|
 | Level Extents | Align level datum extents to the crop region of the active section or elevation view. |
-| Match Viewports Vertically | Align viewport crop regions on a sheet to a reference viewport without moving the viewports themselves. |
+| Align Viewports | Align viewport crop regions on a sheet to a reference viewport without moving the viewports themselves. |
 | Match Sheet Positions | Copy viewport positions and view assignments from one sheet to another, with predictable mapped-viewport order. |
 | Slope Lines | Draw hachure slope lines between top and bottom boundaries, sized and spaced for the active view scale. |
 

@@ -227,12 +227,12 @@
   </AddIn>
 
   <AddIn Type="Command">
-    <Name>SDX: Match Viewports Vertically</Name>
+    <Name>SDX: Align Viewports</Name>
     <Assembly>SDX.dll</Assembly>
-    <FullClassName>SDX.MatchViewportsVertically.MatchViewportsVerticallyCommand</FullClassName>
+    <FullClassName>SDX.AlignViewports.AlignViewportsCommand</FullClassName>
     <ClientId>b269ba45-de79-4072-b24e-736c5fac6803</ClientId>
     <VendorId>SDraak</VendorId>
-    <Text>Match Viewports Vertically</Text>
+    <Text>Align Viewports</Text>
     <Description>Match the crop regions of two or more section viewports vertically on a sheet to a reference element. Adjusts crop regions only; does not move viewports.</Description>
   </AddIn>
 
