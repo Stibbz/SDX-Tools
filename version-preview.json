@@ -16,7 +16,7 @@
     "SDX-2027.addin": "fae12f7ef01340e7d3f66376a33c60e66bccd05bd8c91242d9b753d3769ed359"
   },
   "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.1/SDX-Tools-0.4.8-preview.1.zip",
-  "releaseZipSha256": "3aff87d8e28ffb0e5919056719755b384994cf63d1b105a4a61e856cee4a309b",
+  "releaseZipSha256": "4af9938071184e28e8d1ac962ef52feed572b31f2efed777d25d3983b1e1106f",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
-  "notes": "Preview: View Template Snapshot parent selection now cascades to all layers; Model Health rework."
+  "notes": "## 0.4.8-preview.1\n\n### View Template Snapshot\n- Selecting or deselecting a parent category in the import preview now selects or deselects all of its layers and settings, including folded ones; Select All and Deselect All do the same\n\n### Model Health\n- New Model Health tool with review checks (assembly codes, workset hygiene, naming, pinning, required parameters, units/levels, coordinates, CAD/point clouds, unused content, views on sheets) and autosaved settings\n- Reworked Model Health window with navigation and a reusable result table; results can navigate to elements in Revit\n\n### Align Viewports\n- Match Viewports Vertically renamed to Align Viewports, with an orientation choice; added to the ribbon\n\n### Other tools\n- Move to Geo-Reference: pinned elements window and transformer updates\n- Batch Link Files, Filter By Parameter and Level Extents updated\n\n### General\n- User preferences migrated from XML to JSON, with one-time import of existing XML settings\n- Daily shared log files with a size cap and process ID tagging"
 }
