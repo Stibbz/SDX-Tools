@@ -1,22 +1,22 @@
 {
-  "version": "0.4.8-preview.1",
-  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.1",
+  "version": "0.4.8-preview.2",
+  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.2",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/SDX-Updater.ps1",
   "updaterSha256": "2ab3b369d4fb8a0a3e212c85dbf81345a8611b83a9f40bbad652313e173448f7",
-  "updaterExeUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.1/SDX-Updater.exe",
-  "updaterExeSha256": "438b29a19426d8c9a0116057177a147cd633a5eebeacec9206282b8ae394bcd1",
+  "updaterExeUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.2/SDX-Updater.exe",
+  "updaterExeSha256": "79fa7d852c8f6b4e53080022caa0b89c54bb8b6bc7c083c4c05087e2af6af1c1",
   "assetSha256": {
-    "SDX-2024.dll": "6808fbc848be9a283a43c8829bbce40d15ab5dc27526fba51f390ae6e4b166d6",
-    "SDX-2024.addin": "d233ca656172a884827818f5322e0c924d46fd8b92605f6ea94ed078d9af9b20",
-    "SDX-2025.dll": "ccbef53462b6491a98bee9c2b26e543830248092077119e87fd6f028b391b662",
-    "SDX-2025.addin": "3d0b5ddf2051ae63897f6eb73d85650b792632aa63703c66d0d41364c581048d",
-    "SDX-2026.dll": "b2ec6a4e1436f66643c0c5332fc58ad7001b465544e353968b2644e45975fb9a",
-    "SDX-2026.addin": "c42706dcdd1e8b2890275b3a7b2737c635b5572cbf282cc69cfe685b8c8c200d",
-    "SDX-2027.dll": "d30ddcd77a068e594ce62f2c5fea32c5e0c3ca4130ea51a49a9a2289c4094ea1",
-    "SDX-2027.addin": "fae12f7ef01340e7d3f66376a33c60e66bccd05bd8c91242d9b753d3769ed359"
+    "SDX-2024.dll": "c3e032be71d07c58b2ebc04c3d45642e1ff1c284762a6a26cd8f8015a7bde7e7",
+    "SDX-2024.addin": "cd7f68697154117756580b549574089a92200036128ad917555c802f3884f4f2",
+    "SDX-2025.dll": "760d827c7dfb68e400970dcc62fd243aa022ae7aeb8a34ab23b06fa2c76909f9",
+    "SDX-2025.addin": "04b945f6cd507fd126e17cc2f6c366bd543915771dd4f312f42b876f2a0994f5",
+    "SDX-2026.dll": "392614b673538a7cf9fbd2a972bc46032bed85c43e8556aab759c14bd3366208",
+    "SDX-2026.addin": "f18fa8029f6eb29454ce074942671c261abfcd22408b0cb625cba5a6ea0149b2",
+    "SDX-2027.dll": "17e5977a798211f1568a002981fef5ca80bc6b9e9ca51abc7433a37522771ffd",
+    "SDX-2027.addin": "d2fcbd435f38f99ef9557082e69564bf33cd135ac944cc4681d6c0c39ec4165a"
   },
-  "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.1/SDX-Tools-0.4.8-preview.1.zip",
-  "releaseZipSha256": "4af9938071184e28e8d1ac962ef52feed572b31f2efed777d25d3983b1e1106f",
+  "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.2/SDX-Tools-0.4.8-preview.2.zip",
+  "releaseZipSha256": "0b72a120ad0667fcc87ae03897e35c7a9509d8afb4ad0dd3843bfcc11a1250a0",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
-  "notes": "## 0.4.8-preview.1\n\n### View Template Snapshot\n- Selecting or deselecting a parent category in the import preview now selects or deselects all of its layers and settings, including folded ones; Select All and Deselect All do the same\n\n### Model Health\n- New Model Health tool with review checks (assembly codes, workset hygiene, naming, pinning, required parameters, units/levels, coordinates, CAD/point clouds, unused content, views on sheets) and autosaved settings\n- Reworked Model Health window with navigation and a reusable result table; results can navigate to elements in Revit\n\n### Align Viewports\n- Match Viewports Vertically renamed to Align Viewports, with an orientation choice; added to the ribbon\n\n### Other tools\n- Move to Geo-Reference: pinned elements window and transformer updates\n- Batch Link Files, Filter By Parameter and Level Extents updated\n\n### General\n- User preferences migrated from XML to JSON, with one-time import of existing XML settings\n- Daily shared log files with a size cap and process ID tagging"
+  "notes": "\r\n### Model Health\r\n- Result tables for all generic checks, with row actions and per-check headlines\r\n- Skipped results are persisted and excluded from health counts; the skipped list refreshes correctly after undo and redo\r\n- Configurable sheet conventions with grouped validation\r\n- Compatible view templates are suggested without being assigned automatically\r\n- Approved codes and field-based family naming, with explicit fixes\r\n- Summary settings and an explicit persistence policy\r\n- Duplicate-element safety checks and result table updates\r\n\r\n### Filter By Parameter\r\n- Naming rules, saved preferences and a new settings dialog\r\n\r\n### Align Tags/Texts\r\n- New tool for aligning tags and text notes\r\n\r\n### Breakline\r\n- New tool with settings dialog and summary\r\n\r\n### Free Dims\r\n- New mode window\r\n\r\n### Other tools\r\n- Level Extents updated\r\n- Tool catalog, preferences and ribbon registration updated\r\n"
 }
