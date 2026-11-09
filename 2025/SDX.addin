@@ -197,33 +197,13 @@
   </AddIn>
 
   <AddIn Type="Command">
-    <Name>SDX: Free Dim (Aligned)</Name>
+    <Name>SDX: Free Dims</Name>
     <Assembly>SDX.dll</Assembly>
-    <FullClassName>SDX.FreeDims.FreeDimsAlignedCommand</FullClassName>
+    <FullClassName>SDX.FreeDims.FreeDimsCommand</FullClassName>
     <ClientId>a3f1c820-7e94-4b5d-9c2a-1d8f6e3b0a75</ClientId>
     <VendorId>SDraak</VendorId>
-    <Text>Free Dim (Aligned)</Text>
-    <Description>Place a free aligned dimension between any two points — no geometry required.</Description>
-  </AddIn>
-
-  <AddIn Type="Command">
-    <Name>SDX: Free Dim (Horizontal)</Name>
-    <Assembly>SDX.dll</Assembly>
-    <FullClassName>SDX.FreeDims.FreeDimsHorizontalCommand</FullClassName>
-    <ClientId>b7d2e931-8f05-4c6e-ad3b-2e9a7f4c1b86</ClientId>
-    <VendorId>SDraak</VendorId>
-    <Text>Free Dim (Horizontal)</Text>
-    <Description>Freely measure horizontal distance between any two points — no geometry required.</Description>
-  </AddIn>
-
-  <AddIn Type="Command">
-    <Name>SDX: Free Dim (Vertical)</Name>
-    <Assembly>SDX.dll</Assembly>
-    <FullClassName>SDX.FreeDims.FreeDimsVerticalCommand</FullClassName>
-    <ClientId>c8e3f042-9b16-4d7f-be4c-3f0c8a5d2c97</ClientId>
-    <VendorId>SDraak</VendorId>
-    <Text>Free Dim (Vertical)</Text>
-    <Description>Freely measure vertical distance between any two points — no geometry required.</Description>
+    <Text>Free Dims</Text>
+    <Description>Place a free horizontal, vertical, or aligned dimension between any two points — no geometry required.</Description>
   </AddIn>
 
   <AddIn Type="Command">
@@ -234,6 +214,16 @@
     <VendorId>SDraak</VendorId>
     <Text>Align Viewports</Text>
     <Description>Match the crop regions of two or more section viewports vertically on a sheet to a reference element. Adjusts crop regions only; does not move viewports.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Align Tags &amp; Texts</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.AlignTagsTexts.AlignTagsTextsCommand</FullClassName>
+    <ClientId>9f81198e-9722-42f3-b6cf-a3c246568452</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Align Tags &amp; Texts</Text>
+    <Description>Align tags and text notes horizontally to an already-aligned reference group.</Description>
   </AddIn>
 
   <AddIn Type="Command">
