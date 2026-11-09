@@ -117,6 +117,16 @@
   </AddIn>
 
   <AddIn Type="Command">
+    <Name>SDX: Reference Sections</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.RefSections.RefSectionsCommand</FullClassName>
+    <ClientId>6d2e9b47-1c53-4f08-b7a1-5e3c8d9f2a16</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Reference Sections</Text>
+    <Description>Place reference sections for near-perpendicular sections in the active section or elevation.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
     <Name>SDX: Move Geo</Name>
     <Assembly>SDX.dll</Assembly>
     <FullClassName>SDX.MoveGeo.MoveGeoCommand</FullClassName>
