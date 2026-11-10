@@ -147,16 +147,6 @@
   </AddIn>
 
   <AddIn Type="Command">
-    <Name>SDX: Usage Counter</Name>
-    <Assembly>SDX.dll</Assembly>
-    <FullClassName>SDX.UsageCounter.UsageCounterCommand</FullClassName>
-    <ClientId>b5c8e2f4-1d9a-4b7c-a3e0-6f2d4b8c9a71</ClientId>
-    <VendorId>SDraak</VendorId>
-    <Text>Usage Counter</Text>
-    <Description>View how many times each SDX tool has been used.</Description>
-  </AddIn>
-
-  <AddIn Type="Command">
     <Name>SDX: Detail Lines Length</Name>
     <Assembly>SDX.dll</Assembly>
     <FullClassName>SDX.DetailLinesLength.DetailLinesLengthCommand</FullClassName>
@@ -214,6 +204,16 @@
     <VendorId>SDraak</VendorId>
     <Text>Free Dims</Text>
     <Description>Place a free horizontal, vertical, or aligned dimension between any two points — no geometry required.</Description>
+  </AddIn>
+
+  <AddIn Type="Command">
+    <Name>SDX: Edit Free Dims</Name>
+    <Assembly>SDX.dll</Assembly>
+    <FullClassName>SDX.FreeDims.FreeDimsEditCommand</FullClassName>
+    <ClientId>7ac03753-ae03-444d-a4f6-f6959591cdb1</ClientId>
+    <VendorId>SDraak</VendorId>
+    <Text>Edit Free Dims</Text>
+    <Description>Select all Free Dims helper lines in the active view.</Description>
   </AddIn>
 
   <AddIn Type="Command">

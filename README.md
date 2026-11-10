@@ -95,7 +95,6 @@ Unfinished tools are hidden by default and should be enabled from Preferences on
 | Template Activity Checker — Unfinished | Inspect whether view templates are actively used. Hidden by default. |
 | AutoSync | Configure automatic synchronization and saving intervals. |
 | Addins Visibility | Control the visibility of add-in tabs. |
-| Usage Counter | View local tool-usage counts and outcomes. |
 | Project Tab Colors | Colour Revit document tabs by project. |
 
 ### Selection and parameters
