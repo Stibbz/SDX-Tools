@@ -1,22 +1,22 @@
 {
-  "version": "0.4.8-preview.2",
-  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.2",
+  "version": "0.4.8-preview.3",
+  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.3",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/SDX-Updater.ps1",
   "updaterSha256": "2ab3b369d4fb8a0a3e212c85dbf81345a8611b83a9f40bbad652313e173448f7",
-  "updaterExeUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.2/SDX-Updater.exe",
-  "updaterExeSha256": "cdb6188418ed5a1f64175aa6c766d8e411097c421f34caa99a2c729861e3de4a",
+  "updaterExeUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.3/SDX-Updater.exe",
+  "updaterExeSha256": "001df36cf8d82657b560921db1b2e1d6c45f345468bdde77c07a45b3fa4c40ee",
   "assetSha256": {
-    "SDX-2024.dll": "9a7f8f5c0af538cde79759059b11675fe885da5ed154333409449f65ee2c333d",
-    "SDX-2024.addin": "c8638ea008136d895fb757437c07e201d358229b48194e3280917cd0175d0b52",
-    "SDX-2025.dll": "3d5897dace78e593ea3ac8fcef2b6d143e178c5b04ddeceddf7e1d0ad280866c",
-    "SDX-2025.addin": "50b1e977b4d39247c10741f1372c275774b8639e7c4d5164b83049bbfec6238a",
-    "SDX-2026.dll": "dffd7fd7ddde165b23f9ab40c49997b75770ad4c8010ae5103d4f79f5fb40588",
-    "SDX-2026.addin": "6a6578c47d4419490ad5c93eaf310fef9a5d3b7384ac92ed2c7b56b7e6b1945c",
-    "SDX-2027.dll": "82de984fbd7a42469b6da17d5f90c87fa01f9d87485788f92abd9b777ae693c0",
-    "SDX-2027.addin": "b265e80377cd6c2d7c68685589d30f7205a38e4e5b3521f1eeb506d8b34eb7e1"
+    "SDX-2024.dll": "be0d6965191b52afbfe4c565f730c508b79eca8d8fa656232e1930c26d5646b0",
+    "SDX-2024.addin": "94b9386026aa8a0d3ab3b8568ca808c33798aa4b6bc3b1d665eebee0b4b3d14b",
+    "SDX-2025.dll": "976c2b50303227eda4f8e442ec92a16a87369a6f80e70e1256988b5ac70848ec",
+    "SDX-2025.addin": "bd1845e54a5900b6be441acd4a102f2a8cd6eb9517c85ab5cfd89f8e2d0ee9d8",
+    "SDX-2026.dll": "8443c3d96b8a46e7344e9c6e4aa417aa6ccec8a12259209ef31860f9fee16329",
+    "SDX-2026.addin": "431ed69ad2cbee3abe3c4b1ec307893ea85f739ab65c0414d40b3ca48b377afc",
+    "SDX-2027.dll": "e64c88ec89f9891839f1a8cbdc772240b9f210b6c2ed39995f595d731fbc8ae1",
+    "SDX-2027.addin": "e71fa761354e4b54c7b13d57822ebff1399aedc5a85f288e69b96696adc37880"
   },
-  "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.2/SDX-Tools-0.4.8-preview.2.zip",
-  "releaseZipSha256": "275eb178c84e145c0e9208ce79459ed846ad2f42a3d77d71d1e3e1e699287408",
+  "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.3/SDX-Tools-0.4.8-preview.3.zip",
+  "releaseZipSha256": "2829996cc913b1cd46fd675ec19b395baf92ba9d8ca26af7ef62bb4bfbdbf113",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
   "notes": "\r\n### Model Health\r\n- Result tables for all generic checks, with row actions and per-check headlines\r\n- Skipped results are persisted and excluded from health counts; the skipped list refreshes correctly after undo and redo\r\n- Configurable sheet conventions with grouped validation\r\n- Compatible view templates are suggested without being assigned automatically\r\n- Approved codes and field-based family naming, with explicit fixes\r\n- Summary settings and an explicit persistence policy\r\n- Duplicate-element safety checks and result table updates\r\n\r\n### Filter By Parameter\r\n- Naming rules, saved preferences and a new settings dialog\r\n\r\n### Align Tags/Texts\r\n- New tool for aligning tags and text notes\r\n\r\n### Breakline\r\n- New tool with settings dialog and summary\r\n\r\n### Reference Sections\r\n- New Reference Sections tool for near-perpendicular sections; replaces the Perp Sections ribbon button, which is removed\r\n\r\n### Free Dims\r\n- New mode window\r\n\r\n### Other tools\r\n- Level Extents updated\r\n- Tool catalog, preferences and ribbon registration updated\r\n- Shared slider style, and confirm/alternate dialog buttons now size to their label\r\n"
 }
