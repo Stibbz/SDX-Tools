@@ -16,7 +16,7 @@
     "SDX-2027.addin": "e71fa761354e4b54c7b13d57822ebff1399aedc5a85f288e69b96696adc37880"
   },
   "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.3/SDX-Tools-0.4.8-preview.3.zip",
-  "releaseZipSha256": "ce48f8664392706c390718f487dc67f512cedd950d0294468ea9bdc2ec1dbb64",
+  "releaseZipSha256": "f17304b4eaa5931e291fcd94b3498cba119d28d798731a0d01897b480719a034",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
-  "notes": "**Full Changelog**: https://github.com/Stibbz/SDX-Tools-Dev/compare/v0.4.8-preview.2...v0.4.8-preview.3"
+  "notes": "### Template Sync\n- New tool that keeps view templates in sync across sets, with baseline diffing, merge, exclusion rules, change coalescing and a set editor window\n\n### Free Dims\n- Manage command renamed to Edit, with a new edit mode, helper tagging and updated toasts\n\n### Parameter Calc\n- New tool\n\n### Filter By Parameter\n- Auto names capitalise Multi; cleanup button text no longer clips\n\n### Reference Sections\n- Section ends are ordered so the look direction matches the candidate\n\n### Breakline\n- Summary tweaks\n\n### View Template Diff\n- Executor and window updates\n\n### Removed\n- Usage Counter tool (anonymous telemetry unaffected)\r\n"
 }
