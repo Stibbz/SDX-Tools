@@ -4,19 +4,19 @@
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/SDX-Updater.ps1",
   "updaterSha256": "2ab3b369d4fb8a0a3e212c85dbf81345a8611b83a9f40bbad652313e173448f7",
   "updaterExeUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.3/SDX-Updater.exe",
-  "updaterExeSha256": "0d6d8da7d965d0bfb3ddffc98661640a359b2bb177c8cef6753d4077771025ea",
+  "updaterExeSha256": "0d76578fd2406c065666ff12656bebde58324d1c2340eee0b654cb38ee10f8e0",
   "assetSha256": {
-    "SDX-2024.dll": "95bcf6119e944e8a558596d34353f37b30cf3904b8f0a1f937786c55d0ad73d9",
+    "SDX-2024.dll": "33ac1912215292861d9bbc0ed95f29c5ce61493a35981e9cc965f9282e8fe1b1",
     "SDX-2024.addin": "94b9386026aa8a0d3ab3b8568ca808c33798aa4b6bc3b1d665eebee0b4b3d14b",
-    "SDX-2025.dll": "60bd41f44f423eb0e55d2649b0259362811070e82cbc7d48ae44abe48a530857",
+    "SDX-2025.dll": "e1203557e0fa09bc616d93401d1d899cb5b2589d9cd38f0f292be8ccefad1e1b",
     "SDX-2025.addin": "bd1845e54a5900b6be441acd4a102f2a8cd6eb9517c85ab5cfd89f8e2d0ee9d8",
-    "SDX-2026.dll": "39efb0b1f0f4af8bdfa621973295e0af49d0188e0a8a8e4b8e2d3da09cd7dee2",
+    "SDX-2026.dll": "04ff937d699468fd0d08e60b63877e7794a1aa1afbea1558ff325db2e8fa3fc7",
     "SDX-2026.addin": "431ed69ad2cbee3abe3c4b1ec307893ea85f739ab65c0414d40b3ca48b377afc",
-    "SDX-2027.dll": "4500b3a69c5f8c30b3e39f178537d95fc99cc6e7723f44808cef4001d8d013dd",
+    "SDX-2027.dll": "e9f37be164ce80b2f5540dcc70a9e65a58ea8cce50c27cbbc56e4796683e8d37",
     "SDX-2027.addin": "e71fa761354e4b54c7b13d57822ebff1399aedc5a85f288e69b96696adc37880"
   },
   "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.3/SDX-Tools-0.4.8-preview.3.zip",
-  "releaseZipSha256": "cdbce4df996dac28ccf4d931822431cf416508f82331c0ad862b5c88e422cab3",
+  "releaseZipSha256": "4754e6b751bb62356fb95942005accf584f43ed5237481772b1b183c92498b31",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
-  "notes": "### Hotfix\n- FreeDims: fixes to edit mode, service and toast\n- Template Sync: fixes to set editor and item view models\n- Shared: extensible storage document fix\n\n### Template Sync\n- Window redesigned with staged Apply/Cancel\n- Exclusions now assign filters\n- Per-set toggle and name suggestion\n- Reuses shared UI elements\n\n### Shared\n- Added SdxViewModelBase, WIP/status/section styles and a hint visibility fix"
+  "notes": "### Template Sync\n- New tool that keeps view templates in sync across sets, with baseline diffing, merge, exclusion rules, change coalescing and a set editor window\n\n### Free Dims\n- Manage command renamed to Edit, with a new edit mode, helper tagging and updated toasts\n\n### Parameter Calc\n- New tool\n\n### Filter By Parameter\n- Auto names capitalise Multi; cleanup button text no longer clips\n\n### Reference Sections\n- Section ends are ordered so the look direction matches the candidate\n\n### Breakline\n- Summary tweaks\n\n### View Template Diff\n- Executor and window updates\n\n### Removed\n- Usage Counter tool (anonymous telemetry unaffected)\r\n"
 }
