@@ -2,7 +2,7 @@
   "version": "0.4.7",
   "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.7",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/SDX-Updater.ps1",
-  "updaterSha256": "2ab3b369d4fb8a0a3e212c85dbf81345a8611b83a9f40bbad652313e173448f7",
+  "updaterSha256": "155da301c0783b052bc62fb63a5b0dbd50961fecef7af5c4c1b489b6dd864400",
   "updaterExeUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.7/SDX-Updater.exe",
   "updaterExeSha256": "5cf24207cf1e3dd95729210f1ca55eb407b880eaece60f249a781021f71ea31d",
   "assetSha256": {

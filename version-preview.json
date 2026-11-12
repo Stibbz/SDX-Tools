@@ -1,22 +1,26 @@
 {
-  "version": "0.4.8-preview.4",
-  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.4",
+  "version": "0.4.8-preview.5",
+  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.5",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/SDX-Updater.ps1",
-  "updaterSha256": "2ab3b369d4fb8a0a3e212c85dbf81345a8611b83a9f40bbad652313e173448f7",
-  "updaterExeUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.4/SDX-Updater.exe",
-  "updaterExeSha256": "a3efb399a941ea73f03200a2f2b09b977d412a97b4341e0400b29f8d2b9f161e",
+  "updaterSha256": "155da301c0783b052bc62fb63a5b0dbd50961fecef7af5c4c1b489b6dd864400",
   "assetSha256": {
-    "SDX-2024.dll": "5a2170db26d7a61d963ed695d51449837015f23aaecff288f80726520f4d1cae",
-    "SDX-2024.addin": "94b9386026aa8a0d3ab3b8568ca808c33798aa4b6bc3b1d665eebee0b4b3d14b",
-    "SDX-2025.dll": "8fdb41e0c110303d9cf1dadb1c55fbbb0a5e8fa9ba836be6b06670304e36a3fd",
-    "SDX-2025.addin": "bd1845e54a5900b6be441acd4a102f2a8cd6eb9517c85ab5cfd89f8e2d0ee9d8",
-    "SDX-2026.dll": "6f7b6cbed040f136a5b4274667e50ebd2d6e21058a6e9fe59123323f8add82cd",
-    "SDX-2026.addin": "431ed69ad2cbee3abe3c4b1ec307893ea85f739ab65c0414d40b3ca48b377afc",
-    "SDX-2027.dll": "93d7c53e36c60929daf69a12882e4f4b7375f00cdf73d7ef059bea6a439b36e2",
-    "SDX-2027.addin": "e71fa761354e4b54c7b13d57822ebff1399aedc5a85f288e69b96696adc37880"
+    "SDX-2024.dll": "fdf83bcaeb494309d884e518c2dae3426ec5ee93234b61f3f2c0d560b3efda97",
+    "SDX-2024.addin": "b18192d814197ba28692de4c11783447325a59ec560009940f00be1c973d93b9",
+    "SDX-2025.dll": "4e6d4cb2f5303ad60d6bd7d80cebb1a2f6420ea73255f95fc37752674c747ad8",
+    "SDX-2025.addin": "83d277d2bc031da62e6329467a3671cf7911f7deb10334b022c1569e95267a9c",
+    "SDX-2026.dll": "919fd5be8b9f1e8004f72f0568a5e557f213b37b369c24697c1fd8deed3d72c7",
+    "SDX-2026.addin": "9902d42c3d81d68c9f2cce03a0a90c2d0ab747bab225c245aca55521b8af8894",
+    "SDX-2027.dll": "4617452394e007a61675b362037cfed2d64b2bd1418ad28ca9395eaae4419da4",
+    "SDX-2027.addin": "5dade53e71433acf1a4a36f0791efc987d7b0007cc434d7202e6ba63c8958fa0"
   },
-  "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.4/SDX-Tools-0.4.8-preview.4.zip",
-  "releaseZipSha256": "63d81863af4eab7465890e339bdfe6d7655ee6271eed3951be9b994b53bd2d19",
+  "loaderSha256": {
+    "SDX-Loader-2024.dll": "10ff816eca623a28ef183ab07b0094214f9959b9ae4784a27c1a39560fe24df4",
+    "SDX-Loader-2025.dll": "0a0e46dfc2b178cacd6c32168ac9fa10379560c830e06c696e6b60ebc6a83051",
+    "SDX-Loader-2026.dll": "0a0e46dfc2b178cacd6c32168ac9fa10379560c830e06c696e6b60ebc6a83051",
+    "SDX-Loader-2027.dll": "1018e56da71e880d73551844558dae78d5e24927392ee581c774e3a76f3bacd4"
+  },
+  "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.5/SDX-Tools-0.4.8-preview.5.zip",
+  "releaseZipSha256": "11c70cd8711cee0359358ccd98eca43e3056eddd127806bc1a2db030f0ff65b3",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
-  "notes": "### Hotfix\n- FreeDims: fixes to edit mode, service and toast\n- Template Sync: fixes to set editor and item view models\n- Shared: extensible storage document fix\n\n### Template Sync\n- Window redesigned with staged Apply/Cancel\n- Exclusions now assign filters\n- Per-set toggle and name suggestion\n- Reuses shared UI elements\n\n### Shared\n- Added SdxViewModelBase, WIP/status/section styles and a hint visibility fix"
+  "notes": "In-process staged updates via SDX.Loader; SDX-Updater.exe removed (SDX-Updater.ps1 remains an optional fallback). See CHANGELOG.md."
 }
