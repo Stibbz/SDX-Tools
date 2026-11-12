@@ -2,7 +2,7 @@
 <!--
   Revit 2027 addin manifest for SDX Tools.
 
-  Deployment: copy this entire folder (SDX.addin + SDX.dll) to
+  Deployment: copy this entire folder (SDX.addin + SDX\ loader layout) to
     %AppData%\Autodesk\Revit\Addins\2027\
 
   Development: load bin\Debug\net8.0-windows\SDX.Debug.dll via the Addin
@@ -13,8 +13,8 @@
   <!-- ── Application ─ builds the ribbon and starts the AutoSync timer ── -->
   <AddIn Type="Application">
     <Name>SDX Tools</Name>
-    <Assembly>SDX.dll</Assembly>
-    <FullClassName>SDX.Ribbon.SDXApp</FullClassName>
+    <Assembly>SDX\SDX.Loader.dll</Assembly>
+    <FullClassName>SDX.Loader.LoaderApp</FullClassName>
     <ClientId>c39eb6ae-847d-4222-b2be-c687cf068ff9</ClientId>
     <VendorId>SDraak</VendorId>
     <VendorDescription>SDX Tools</VendorDescription>

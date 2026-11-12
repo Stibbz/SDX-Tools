@@ -45,6 +45,10 @@ $ErrorActionPreference = "Stop"
 # The two files that are replaced for each Revit version.
 $FilesToUpdate = @("SDX.dll", "SDX.addin")
 
+# SHA-256 map for SDX-Loader-<year>.dll assets (manifest "loaderSha256"). Empty for
+# manifests that predate the loader; those installs keep the legacy flat layout.
+$script:LoaderHashes = @{}
+
 # The Revit versions SDX Tools supports. Only versions actually installed on this
 # machine (i.e. the folder exists) will be updated.
 $SupportedRevitVersions = @("2024", "2025", "2026", "2027")
@@ -472,6 +476,19 @@ function Get-FileHashesFromManifest {
         throw "Manifest did not provide filesManifest. Refusing to replace unverified files."
     }
 
+    # loaderSha256 is optional (absent in pre-loader manifests). When present it must be valid.
+    $script:LoaderHashes = @{}
+    if ($null -ne $Manifest.loaderSha256) {
+        foreach ($property in $Manifest.loaderSha256.PSObject.Properties) {
+            $loaderName = [string]$property.Name
+            $loaderHash = ([string]$property.Value).Trim()
+            if ([string]::IsNullOrWhiteSpace($loaderName) -or $loaderHash -notmatch '^[0-9a-fA-F]{64}$') {
+                throw "Manifest contains a missing or malformed loader checksum."
+            }
+            $script:LoaderHashes[$loaderName] = $loaderHash
+        }
+    }
+
     $hashes = @{}
     foreach ($property in $manifestHashes.PSObject.Properties) {
         $name = [string]$property.Name
@@ -556,6 +573,36 @@ function Get-PublishedFileHashes {
     throw "No published manifest provides verified file hashes for version $TargetVersion. Refusing to replace unverified files."
 }
 
+# Best-effort: when the caller supplied only the asset hashes (-FilesManifestPath), read the
+# loaderSha256 map from the published manifest for the same version.
+function Get-PublishedLoaderHashes {
+    param([string] $TargetVersion)
+
+    $normalizedTarget = $TargetVersion.Trim().TrimStart('v', 'V')
+    foreach ($url in @(
+        "https://stibbz.github.io/SDX-Tools/version.json",
+        "https://stibbz.github.io/SDX-Tools/version-preview.json"
+    )) {
+        try {
+            $manifest = Invoke-RestMethod -Uri $url -TimeoutSec 15 -UserAgent "SDX-Updater"
+            if (([string]$manifest.version).Trim().TrimStart('v', 'V') -ne $normalizedTarget) { continue }
+            $loaderHashes = @{}
+            if ($null -ne $manifest.loaderSha256) {
+                foreach ($property in $manifest.loaderSha256.PSObject.Properties) {
+                    $hash = ([string]$property.Value).Trim()
+                    if ($hash -notmatch '^[0-9a-fA-F]{64}$') { throw "malformed loader checksum" }
+                    $loaderHashes[[string]$property.Name] = $hash
+                }
+            }
+            return $loaderHashes
+        }
+        catch {
+            Write-Log "Could not read loader checksums from ${url}: $($_.Exception.Message)"
+        }
+    }
+    return @{}
+}
+
 function Get-FileHashesFromPath {
     param([string] $Path)
 
@@ -605,6 +652,105 @@ function Install-VerifiedFile {
     }
     finally {
         Remove-Item -LiteralPath $temporaryFilePath -Force -ErrorAction SilentlyContinue
+    }
+}
+
+# Downloads $RemoteName, verifies it and moves it to $DestinationFilePath (creating the folder).
+function Install-VerifiedAsset {
+    param(
+        [System.Net.WebClient] $Client,
+        [string] $BaseUrl,
+        [string] $RemoteName,
+        [string] $DestinationFilePath,
+        [string] $ExpectedHash
+    )
+
+    $destinationDirectory = Split-Path $DestinationFilePath -Parent
+    if (-not (Test-Path $destinationDirectory)) {
+        New-Item -ItemType Directory -Path $destinationDirectory -Force | Out-Null
+    }
+    Write-Log "  Downloading: $BaseUrl/$RemoteName"
+    Install-VerifiedFile -Client $Client -DownloadUrl "$BaseUrl/$RemoteName" -DestinationFilePath $DestinationFilePath -ExpectedHash $ExpectedHash
+    Write-Log "  Installed to: $DestinationFilePath"
+}
+
+# Installs SDX for one Revit year. Uses the loader layout when the manifest publishes a
+# loader asset for the year (or the year is already on the loader layout):
+#   <year>\SDX.addin  <year>\SDX\SDX.Loader.dll  <year>\SDX\versions\<ver>\SDX.dll  <year>\SDX\current.json
+# Otherwise the legacy flat SDX.dll + SDX.addin install is performed (old manifests).
+function Install-RevitYear {
+    param(
+        [System.Net.WebClient] $Client,
+        [string] $BaseUrl,
+        [string] $RevitVersion,
+        [string] $DestinationFolder,
+        [string] $TargetVersion,
+        [hashtable] $FileHashes
+    )
+
+    $dllAsset = "SDX-$RevitVersion.dll"
+    $addinAsset = "SDX-$RevitVersion.addin"
+    $loaderAsset = "SDX-Loader-$RevitVersion.dll"
+    $sdxFolder = Join-Path $DestinationFolder "SDX"
+    $currentPath = Join-Path $sdxFolder "current.json"
+    $hasLoaderAsset = $script:LoaderHashes.ContainsKey($loaderAsset)
+    $layoutExists = Test-Path $currentPath
+
+    if (-not $hasLoaderAsset -and -not $layoutExists) {
+        foreach ($fileName in $FilesToUpdate) {
+            $remoteFileName = "SDX-$RevitVersion$([System.IO.Path]::GetExtension($fileName))"
+            Install-VerifiedAsset -Client $Client -BaseUrl $BaseUrl -RemoteName $remoteFileName `
+                -DestinationFilePath (Join-Path $DestinationFolder $fileName) -ExpectedHash $FileHashes[$remoteFileName]
+        }
+        return
+    }
+
+    $folderName = $TargetVersion.Trim().TrimStart('v', 'V')
+    if ($folderName -notmatch '^[0-9A-Za-z][0-9A-Za-z.\-]*$') {
+        throw "Version '$TargetVersion' is not safe to use as a folder name."
+    }
+
+    if ($hasLoaderAsset) {
+        Install-VerifiedAsset -Client $Client -BaseUrl $BaseUrl -RemoteName $loaderAsset `
+            -DestinationFilePath (Join-Path $sdxFolder "SDX.Loader.dll") -ExpectedHash $script:LoaderHashes[$loaderAsset]
+    }
+
+    $versionFolder = Join-Path $sdxFolder "versions\$folderName"
+    $versionDll = Join-Path $versionFolder "SDX.dll"
+    Install-VerifiedAsset -Client $Client -BaseUrl $BaseUrl -RemoteName $dllAsset `
+        -DestinationFilePath $versionDll -ExpectedHash $FileHashes[$dllAsset]
+
+    # current.json: point the loader at the new version, remembering the old one.
+    $previous = $null
+    $blocked = @()
+    if ($layoutExists) {
+        try {
+            $existing = Get-Content -LiteralPath $currentPath -Raw | ConvertFrom-Json
+            if (-not [string]::IsNullOrWhiteSpace([string]$existing.version) -and [string]$existing.version -ne $folderName) {
+                $previous = [string]$existing.version
+            }
+            $blocked = @($existing.blocked | Where-Object { $_ -and [string]$_ -ne $folderName })
+        }
+        catch {
+            Write-Log "  Existing current.json unreadable; rewriting it."
+        }
+    }
+    $currentJson = [ordered]@{ version = $folderName; previous = $previous; pendingBoot = $null; blocked = $blocked } | ConvertTo-Json -Compress
+    [System.IO.File]::WriteAllText($currentPath, $currentJson, (New-Object System.Text.UTF8Encoding($false)))
+    Write-Log "  Wrote $currentPath (version $folderName)."
+
+    # Written last: the new .addin loads the loader, so it must only appear once the
+    # loader layout is complete. A loader-layout year whose manifest lacks the loader
+    # asset keeps its current .addin (a flat-layout one would not load the loader).
+    if ($hasLoaderAsset) {
+        Install-VerifiedAsset -Client $Client -BaseUrl $BaseUrl -RemoteName $addinAsset `
+            -DestinationFilePath (Join-Path $DestinationFolder "SDX.addin") -ExpectedHash $FileHashes[$addinAsset]
+
+        $legacyDll = Join-Path $DestinationFolder "SDX.dll"
+        if (Test-Path $legacyDll) {
+            Move-Item -LiteralPath $legacyDll -Destination "$legacyDll.old" -Force
+            Write-Log "  Retired legacy SDX.dll to SDX.dll.old."
+        }
     }
 }
 
@@ -678,9 +824,11 @@ function Invoke-StandaloneInstall {
 
     $existingDllPaths = @()
     foreach ($revitVersion in $plan.RevitVersions) {
-        $existingDllPath = Join-Path $plan.RevitAddinsFolder "$revitVersion\SDX.dll"
-        if (Test-Path $existingDllPath) {
-            $existingDllPaths += $existingDllPath
+        foreach ($relativePath in "SDX.dll", "SDX\SDX.Loader.dll") {
+            $existingDllPath = Join-Path $plan.RevitAddinsFolder "$revitVersion\$relativePath"
+            if (Test-Path $existingDllPath) {
+                $existingDllPaths += $existingDllPath
+            }
         }
     }
 
@@ -701,16 +849,8 @@ function Invoke-StandaloneInstall {
             }
 
             Write-Log "Installing SDX for Revit $revitVersion on channel $($plan.Channel)..."
-            foreach ($fileName in $FilesToUpdate) {
-                $extension = [System.IO.Path]::GetExtension($fileName)
-                $remoteFileName = "SDX-$revitVersion$extension"
-                $downloadUrl = "$baseUrl/$remoteFileName"
-                $destinationFilePath = Join-Path $destinationFolder $fileName
-
-                Write-Log "  Downloading: $downloadUrl"
-                Install-VerifiedFile -Client $downloadClient -DownloadUrl $downloadUrl -DestinationFilePath $destinationFilePath -ExpectedHash $fileHashes[$remoteFileName]
-                Write-Log "  Installed to: $destinationFilePath"
-            }
+            Install-RevitYear -Client $downloadClient -BaseUrl $baseUrl -RevitVersion $revitVersion `
+                -DestinationFolder $destinationFolder -TargetVersion $targetVersionToUse -FileHashes $fileHashes
         }
     }
     finally {
@@ -1201,6 +1341,10 @@ try {
         } else {
             Get-FileHashesFromPath -Path $FilesManifestPath
         }
+        if ($script:LoaderHashes.Count -eq 0) {
+            # Callers (and old SDX builds) pass only the asset hashes; look up the loader hashes.
+            $script:LoaderHashes = Get-PublishedLoaderHashes -TargetVersion $NewVersion
+        }
 
         Write-Log "SDX Tools updater started."
         Write-Log "Revit process ID : $RevitPid"
@@ -1281,8 +1425,10 @@ try {
         # Step 5: Confirm the existing DLL files are no longer locked by Revit.
         $existingDllPaths = @()
         foreach ($revitVersion in $installedVersionFolders) {
-            $dllPath = Join-Path $RevitAddinsFolder "$revitVersion\SDX.dll"
-            if (Test-Path $dllPath) { $existingDllPaths += $dllPath }
+            foreach ($relativePath in "SDX.dll", "SDX\SDX.Loader.dll") {
+                $dllPath = Join-Path $RevitAddinsFolder "$revitVersion\$relativePath"
+                if (Test-Path $dllPath) { $existingDllPaths += $dllPath }
+            }
         }
 
         if ($existingDllPaths.Count -gt 0) {
@@ -1309,19 +1455,10 @@ try {
             $destinationFolder = Join-Path $RevitAddinsFolder $revitVersion
             Write-Log "Updating Revit $revitVersion..."
 
-            foreach ($fileName in $FilesToUpdate) {
-                # Remote assets are flat-named per release (SDX-2025.dll etc.)
-                # because GitHub release asset names cannot contain slashes.
-                # Local install path keeps the plain file name in the version folder.
-                $extension           = [System.IO.Path]::GetExtension($fileName)
-                $remoteFileName      = "SDX-$revitVersion$extension"
-                $downloadUrl         = "$baseUrl/$remoteFileName"
-                $destinationFilePath = Join-Path $destinationFolder $fileName
-
-                Write-Log "  Downloading: $downloadUrl"
-                Install-VerifiedFile -Client $downloadClient -DownloadUrl $downloadUrl -DestinationFilePath $destinationFilePath -ExpectedHash $fileHashes[$remoteFileName]
-                Write-Log "  Installed to: $destinationFilePath"
-            }
+            # Remote assets are flat-named per release (SDX-2025.dll, SDX-Loader-2025.dll)
+            # because GitHub release asset names cannot contain slashes.
+            Install-RevitYear -Client $downloadClient -BaseUrl $baseUrl -RevitVersion $revitVersion `
+                -DestinationFolder $destinationFolder -TargetVersion $NewVersion -FileHashes $fileHashes
 
             Write-Log "Revit $revitVersion updated successfully."
             $anythingUpdated = $true

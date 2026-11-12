@@ -22,11 +22,10 @@ It supports **Revit 2024, 2025, 2026, and 2027** on Windows.
 
 ## Install
 
-### Recommended: SDX Updater
+### Recommended: SDX-Updater.ps1
 
 1. Open the [latest release](https://github.com/Stibbz/SDX-Tools/releases/latest).
-2. Download and run **`SDX-Updater.exe`**.
-   - If needed, use **`SDX-Updater.ps1`** instead.
+2. Download **`SDX-Updater.ps1`** and run it with `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\SDX-Updater.ps1`.
 3. Close Revit when prompted.
 4. Choose the Revit versions you want SDX Tools installed for.
 5. Choose **Stable** or **Preview**, then select **Install / Update**.
