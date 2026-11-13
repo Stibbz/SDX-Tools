@@ -1,26 +1,26 @@
 {
-  "version": "0.4.8-preview.6",
-  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.6",
+  "version": "0.4.8-preview.7",
+  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.7",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/SDX-Updater.ps1",
   "updaterSha256": "155da301c0783b052bc62fb63a5b0dbd50961fecef7af5c4c1b489b6dd864400",
   "assetSha256": {
-    "SDX-2024.dll": "4bf66a38a69fa460d64b2d4ee1b04a1dbfbe2b09e5e3b14ccf40df98d3ad97eb",
+    "SDX-2024.dll": "acb6b77e6bd37d816a79a50c00f413cae4b1724303c7ba4a73960a708d43d0d9",
     "SDX-2024.addin": "b18192d814197ba28692de4c11783447325a59ec560009940f00be1c973d93b9",
-    "SDX-2025.dll": "6ed632081c6aded2b0bbf3a362f0e7336bf425996cd57fbc828d6f5e974606a8",
+    "SDX-2025.dll": "5f09b038229161d4726e1bac62afdfc69d0f9762d777c9822a42c031452545f1",
     "SDX-2025.addin": "83d277d2bc031da62e6329467a3671cf7911f7deb10334b022c1569e95267a9c",
-    "SDX-2026.dll": "8ed2323a185056cff4a472413b50528129d0ea12b904bf88800a30b8ac2597d8",
+    "SDX-2026.dll": "985ac39b9b527db1a26242aad9e4c71bbedf3bbf3d206bdb4a501db0fa278800",
     "SDX-2026.addin": "9902d42c3d81d68c9f2cce03a0a90c2d0ab747bab225c245aca55521b8af8894",
-    "SDX-2027.dll": "500fbac9542e2c5d18f7b64e56648b80821235eb75bc91c38344ed4ca7a94bfc",
+    "SDX-2027.dll": "a9b49738b0c848068c04cdce1ba319b85e68ffa68a5de8b4df381d38a89001d6",
     "SDX-2027.addin": "5dade53e71433acf1a4a36f0791efc987d7b0007cc434d7202e6ba63c8958fa0"
   },
   "loaderSha256": {
-    "SDX-Loader-2024.dll": "8a59c494dc3cecf29ee8db5dd8fdf04c4946fde5f19f28c8d0e53eb5ecd2612d",
-    "SDX-Loader-2025.dll": "13859a7ee82ec71233ae7fb058bf90a2f657378472eb62b0cd6b6d256de2823e",
-    "SDX-Loader-2026.dll": "13859a7ee82ec71233ae7fb058bf90a2f657378472eb62b0cd6b6d256de2823e",
-    "SDX-Loader-2027.dll": "370ee79391ab4cffd286941cf807ea3521c66b1141510c1bed6d8dc8391d9caf"
+    "SDX-Loader-2024.dll": "6feffedc6c033dfaf6dbdcf9394e6d2ff40b0215d77baa2f738874ff352e156c",
+    "SDX-Loader-2025.dll": "2d43e00f8d164cba684698ab6f97905c1dc9e3f14c60b2df2f0aca3dbcb2ac71",
+    "SDX-Loader-2026.dll": "2d43e00f8d164cba684698ab6f97905c1dc9e3f14c60b2df2f0aca3dbcb2ac71",
+    "SDX-Loader-2027.dll": "e7215df5b3cfe31131795ac894f527d6b9c28d82fd8dd737f1ee38e001b95259"
   },
-  "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.6/SDX-Tools-0.4.8-preview.6.zip",
-  "releaseZipSha256": "ec72873b7351709d5fb1f28d4ef833085092fca1e943db66e3e97eee42a540f9",
+  "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8-preview.7/SDX-Tools-0.4.8-preview.7.zip",
+  "releaseZipSha256": "65f8e1880bc7f060d9e2b4714b788265ae3ff03e6aecf1b46525322059dd6250",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
-  "notes": "Template Sync: per-tab named exclusion counts, checkbox switches, draggable panes; refreshed shared checkbox style. See CHANGELOG.md."
+  "notes": "Centered checkbox tick mark; includes all preview.6 Template Sync changes. See CHANGELOG.md."
 }
