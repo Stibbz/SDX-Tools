@@ -1,26 +1,26 @@
 {
-  "version": "0.4.8",
-  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8",
+  "version": "0.4.9-preview.1",
+  "filesBaseUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.9-preview.1",
   "updaterUrl": "https://stibbz.github.io/SDX-Tools/SDX-Updater.ps1",
   "updaterSha256": "155da301c0783b052bc62fb63a5b0dbd50961fecef7af5c4c1b489b6dd864400",
   "assetSha256": {
-    "SDX-2024.dll": "c024466829acae2d15b111245c9bea40cc50d2dec9df8c5d1c0517a59b864a0e",
+    "SDX-2024.dll": "7a94fec0ccabd50caae1e0cab6241d35ea1fd0154a800c5a700e67e9bfa85f6a",
     "SDX-2024.addin": "b18192d814197ba28692de4c11783447325a59ec560009940f00be1c973d93b9",
-    "SDX-2025.dll": "0d82ae9e6b2e8926df063bf459893c92b88448990154b121cc55b790603b6c44",
+    "SDX-2025.dll": "0dcaf18867697b933c0c30114ceb6279222d35eb1c7392ad094657c70d223065",
     "SDX-2025.addin": "83d277d2bc031da62e6329467a3671cf7911f7deb10334b022c1569e95267a9c",
-    "SDX-2026.dll": "80d83c68646ba27d39d3c01a42edddd4d7e6214f64061805d124d9cd5e6c2a5a",
+    "SDX-2026.dll": "b5b4218e11d618f1f92f0b5f55b3b310974951a4137f34e4d513b03212841c28",
     "SDX-2026.addin": "9902d42c3d81d68c9f2cce03a0a90c2d0ab747bab225c245aca55521b8af8894",
-    "SDX-2027.dll": "a344a4e1928bd20c9b31c731910057154f14d50687c6bdf0d66fec3516cceef9",
+    "SDX-2027.dll": "c147e8df6fd10505608083e94e1d9555186cb32a83a52194eb9742e6fec070fa",
     "SDX-2027.addin": "5dade53e71433acf1a4a36f0791efc987d7b0007cc434d7202e6ba63c8958fa0"
   },
   "loaderSha256": {
-    "SDX-Loader-2024.dll": "f138a4ceb104f54d9130a3960af0957ec78a9ece9a23c6341aea9dcf8c2f0c15",
-    "SDX-Loader-2025.dll": "e8e65266572ac7b89724f8910e0b0e1074b13a9faa3321581711ddc76e4d372f",
-    "SDX-Loader-2026.dll": "e8e65266572ac7b89724f8910e0b0e1074b13a9faa3321581711ddc76e4d372f",
-    "SDX-Loader-2027.dll": "b5cfe871f78d1b0ddd089bc2ceaba9699fa6fb8c292d22ab68f763b10661db7e"
+    "SDX-Loader-2024.dll": "c65a8be9db943c9173fdbb7cf651c7bf96905d4ccbe24fe7f75dde539c021392",
+    "SDX-Loader-2025.dll": "5058766e7f8c90ecba971b9677e9867efa57c26f3985666e9444ae0d936c241d",
+    "SDX-Loader-2026.dll": "5058766e7f8c90ecba971b9677e9867efa57c26f3985666e9444ae0d936c241d",
+    "SDX-Loader-2027.dll": "e41dcfac7798816b277ec1a22e43f40d669adf48e06d9e783c6f3f79dc108855"
   },
-  "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.8/SDX-Tools-0.4.8.zip",
-  "releaseZipSha256": "928d7e834a37f947c67b008f02fda6a80713313900d9f9896223fe915a240271",
+  "releaseZipUrl": "https://github.com/Stibbz/SDX-Tools/releases/download/v0.4.9-preview.1/SDX-Tools-0.4.9-preview.1.zip",
+  "releaseZipSha256": "b1d5d3028361fe6f9789ac630170603201401a3c62333a9a09636f100af3f2b1",
   "downloadPageUrl": "https://github.com/Stibbz/SDX-Tools/releases/latest",
-  "notes": "### Updater\n- Updates are now staged in-process and applied by a tiny fixed `SDX.Loader.dll` on the next Revit start: no helper process and no new Revit security prompt per update; a version that fails to start is rolled back automatically. `SDX-Updater.ps1` remains an optional fallback (`UpdateMethod=Script`)\n- New install layout: `SDX.addin` loads `SDX\\SDX.Loader.dll`, which runs `SDX\\versions\\<version>\\SDX.dll`. Revit shows its security prompt once after the `.addin` changes\n- Staged download progress, an update-available toast and a single-prompt flow\n- `SDX-Updater.exe` is removed; `SDX-Updater.ps1` is the only updater\n\n### Template Sync\n- New tool that keeps view templates in sync across sets, with baseline diffing, merge, exclusion rules, change coalescing and a set editor window\n- Per-tab exclusion counts named explicitly (Filter, Imported Category, Model Category, Annotation Category); counts update live as you edit\n- Per-tab syncing checkboxes with an On/Off status, and draggable pane widths\n- Conflicting filters are shown and explained when applying\n- Stored sets and baselines are protected, and staged sets are validated, with clearer messages\n\n### Filter By Parameter\n- Naming rules, saved preferences and a new settings dialog\n- Auto names capitalise Multi; cleanup button text no longer clips\n\n### Free Dims\n- Manage command renamed to Edit, with a new edit mode, helper tagging, a mode window and updated toasts\n\n### Reference Sections\n- New tool for near-perpendicular sections; replaces the Perp Sections ribbon button. Section ends are ordered so the look direction matches the candidate\n\n### Parameter Calc\n- New tool; its report is written to `%APPDATA%\\SDX\\Reports` with 14-day cleanup\n\n### Align Viewports\n- Match Viewports Vertically renamed to Align Viewports, with an orientation choice\n\n### View Template Snapshot\n- Selecting or deselecting a parent category in the import preview selects or deselects all of its layers and settings; Select All and Deselect All do the same\n\n### Other tools\n- Move to Geo-Reference, Batch Link Files and Level Extents updated\n- Breakline result toast simplified\n- Tools that are still in development are only available on the Preview channel\n\n### General\n- User preferences migrated from XML to JSON, with one-time import of existing XML settings\n- Daily shared log files with a size cap and process ID tagging\n- Refreshed shared checkbox style, slider style and dialog buttons across all tools\n\n### Removed\n- Usage Counter tool (anonymous telemetry unaffected)\n\r\n"
+  "notes": "### Look and feel\n- New design system across all tools: dark and light themes that follow Revit's own theme (re-checked at the start of every command), shared colour tokens, a common type scale and standard dialog widths\n- Bundled Source Sans 3 and Source Code Pro fonts\n- Reworked shared styles: buttons, radio buttons, combo boxes, tooltips, toasts, dialog titles and one shared Select all / Deselect all row\n- Message dialog buttons size to their labels\n- Preferences, Breakline settings, Model Health and many smaller dialogs brought to the new spec\n- Model Health overview shows full-width verdict rows\n\n### Icons\n- New icon set for all tools on the ribbon and the Preferences tiles, with a dot badge on tools that are still in development\n\n### Fixes\n- Alignment, column widths and row readability fixed in Match Sheet Positions, Phase Parameter Sync, Telemetry, Find & Replace, V/G Manager, Tag CAD Layers, Move to Geo-Reference, Template Sync and View Template Snapshot\n- Template Sync conflict message now names the setting and set\n\r\n"
 }
